@@ -60,12 +60,6 @@
     }
   },
   {
-    "type": "text",
-    "name": "site_name",
-    "label": "Site Name",
-    "default": "Mermaid Series"
-  },
-  {
     "type": "image",
     "name": "logo",
     "label": "Logo",

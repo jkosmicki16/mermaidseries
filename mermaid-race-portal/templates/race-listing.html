@@ -1,6 +1,17 @@
-{% extends "./layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Find a Race — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
 
 <div class="page-header">
   <div class="container">
@@ -48,13 +59,16 @@
       <button class="filter-btn" data-filter="completed">Past Races</button>
     </div>
 
-    <!-- Results count -->
-    <p style="color: var(--color-gray-500); font-size: .875rem; margin-bottom: 1.5rem;" id="results-count">Loading races…</p>
-
     <!-- Race Grid (populated by HubDB query module) -->
-    {% module "race_listing_grid" path="./../../modules/race-search.module" label="Race Listing Grid" %}
+    {% module "race_listing_grid" path="mermaid-race-portal/modules/race-search.module" label="Race Listing Grid" %}
 
   </div>
 </section>
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

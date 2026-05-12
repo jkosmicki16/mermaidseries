@@ -1,4 +1,4 @@
-{% set site_name = theme.site_name %}
+{% set site_name = "Mermaid Series" %}
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer-grid">
@@ -39,7 +39,7 @@
       <div class="footer-col">
         <h4>Runner Portal</h4>
         <ul>
-          <li><a href="/register">Create Account</a></li>
+          <li><a href="/register-account">Create Account</a></li>
           <li><a href="/login">Log In</a></li>
           <li><a href="/dashboard">My Dashboard</a></li>
           <li><a href="/dashboard/registrations">My Registrations</a></li>
@@ -61,7 +61,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; {{ "now" | strtotime | strftime("%Y") }} {{ site_name }}. All rights reserved.</p>
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> {{ site_name }}. All rights reserved.</p>
       <nav aria-label="Footer legal links">
         <a href="/privacy-policy" style="color: var(--color-gray-400); font-size: .875rem; margin-right: 1rem;">Privacy</a>
         <a href="/terms-of-service" style="color: var(--color-gray-400); font-size: .875rem;">Terms</a>

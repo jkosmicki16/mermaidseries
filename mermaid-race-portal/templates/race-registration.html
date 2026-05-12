@@ -1,6 +1,17 @@
-{% extends "./layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Race Registration — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
 
 <div class="page-header" style="padding: 2.5rem 0;">
   <div class="container">
@@ -43,9 +54,15 @@
     </div>
 
     <!-- Registration Form Module -->
-    {% module "registration_form" path="./../../modules/race-registration-form.module" label="Race Registration Form" %}
+    {% module "registration_form" path="mermaid-race-portal/modules/race-registration-form.module" label="Race Registration Form" %}
 
   </div>
 </section>
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

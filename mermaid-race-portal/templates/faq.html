@@ -1,5 +1,17 @@
-{% extends "./layouts/base.html" %}
-{% block body %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("FAQ — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
+
+<main>
 
 <div class="page-header">
   <div class="container">
@@ -27,7 +39,7 @@
     <div id="faq-accordion">
       {% for faq in faqs %}
       <div style="border-bottom: 1px solid var(--color-gray-200);">
-        <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');"
+        <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');"
           style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; background: none; border: none; cursor: pointer; gap: 1rem; font-family: var(--font-family-base);"
           aria-expanded="false">
           <span style="font-size: 1rem; font-weight: 600; color: var(--color-secondary);">{{ faq.q }}</span>
@@ -49,13 +61,10 @@
   </div>
 </section>
 
-<script>
-document.querySelectorAll('#faq-accordion button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-  });
-});
-</script>
+</main>
 
-{% endblock %}
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

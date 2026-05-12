@@ -1,5 +1,5 @@
 {% set logo = theme.logo %}
-{% set site_name = theme.site_name %}
+{% set site_name = "Mermaid Series" %}
 <header class="site-header" role="banner">
   <div class="container">
     <div class="header-inner">
@@ -28,7 +28,7 @@
       <div class="header-actions">
         {% if contact.is_logged_in %}
           <a href="/dashboard" class="btn btn-outline btn-sm">My Dashboard</a>
-          <a href="{% logout_url %}" class="btn btn-sm" style="color: var(--color-gray-600)">Log Out</a>
+          <a href="{{ logout_url() }}" class="btn btn-sm" style="color: var(--color-gray-600)">Log Out</a>
         {% else %}
           <a href="/login" class="btn btn-outline btn-sm">Log In</a>
           <a href="/races" class="btn btn-primary btn-sm">Register Now</a>

@@ -1,6 +1,17 @@
-{% extends "./layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Race Details — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
 
 {% set race = hubdb_table_rows("races", "slug=" ~ content.slug ~ "&limit=1")[0] %}
 
@@ -213,4 +224,10 @@
 </div>
 {% endif %}
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

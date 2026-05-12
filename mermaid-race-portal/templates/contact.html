@@ -1,5 +1,17 @@
-{% extends "./layouts/base.html" %}
-{% block body %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Contact Us — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
+
+<main>
 
 <div class="page-header">
   <div class="container">
@@ -17,26 +29,35 @@
         <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Get In Touch</h2>
         <p style="color: var(--color-gray-600); margin-bottom: 2.5rem; line-height: 1.75;">We typically respond within 1–2 business days. For urgent race-day questions, please include your confirmation number.</p>
 
-        {% for item in [
-          {"icon": "mail", "label": "Email", "value": "hello@mermaidseries.com", "href": "mailto:hello@mermaidseries.com"},
-          {"icon": "clock", "label": "Support Hours", "value": "Mon–Fri, 9am–5pm ET", "href": ""},
-          {"icon": "help-circle", "label": "FAQ", "value": "Browse common questions", "href": "/faq"}
-        ] %}
         <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
           <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            {% if item.icon == "mail" %}<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            {% elif item.icon == "clock" %}<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            {% else %}<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            {% endif %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
           <div>
-            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">{{ item.label }}</div>
-            {% if item.href %}<a href="{{ item.href }}" style="font-weight: 500; color: var(--color-secondary);">{{ item.value }}</a>
-            {% else %}<span style="font-weight: 500; color: var(--color-secondary);">{{ item.value }}</span>
-            {% endif %}
+            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">Email</div>
+            <a href="mailto:hello@mermaidseries.com" style="font-weight: 500; color: var(--color-secondary);">hello@mermaidseries.com</a>
           </div>
         </div>
-        {% endfor %}
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
+          <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">Support Hours</div>
+            <span style="font-weight: 500; color: var(--color-secondary);">Mon–Fri, 9am–5pm ET</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
+          <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">FAQ</div>
+            <a href="/faq" style="font-weight: 500; color: var(--color-secondary);">Browse common questions</a>
+          </div>
+        </div>
       </div>
 
       <!-- Contact Form -->
@@ -49,4 +70,10 @@
   </div>
 </section>
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

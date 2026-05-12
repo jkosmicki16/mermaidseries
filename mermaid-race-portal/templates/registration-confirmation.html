@@ -1,6 +1,17 @@
-{% extends "./layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Registration Confirmed — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
 
 <section class="section" style="min-height: 70vh; display: flex; align-items: center;">
   <div class="container" style="max-width: 640px; text-align: center;">
@@ -21,7 +32,7 @@
       <dl style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0;">
         <div>
           <dt style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); font-weight: 600; margin-bottom: .25rem;">Confirmation #</dt>
-          <dd style="font-weight: 700; color: var(--color-secondary); font-size: 1.125rem;">{{ request.params.conf | default("MRM-XXXXXX") }}</dd>
+          <dd style="font-weight: 700; color: var(--color-secondary); font-size: 1.125rem;" data-conf-placeholder>{{ request.query_dict.conf | default("MRM-XXXXXX") }}</dd>
         </div>
         <div>
           <dt style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); font-weight: 600; margin-bottom: .25rem;">Status</dt>
@@ -29,11 +40,11 @@
         </div>
         <div>
           <dt style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); font-weight: 600; margin-bottom: .25rem;">Race</dt>
-          <dd style="font-weight: 600; color: var(--color-gray-800);">{{ request.params.race | default("Selected Race") }}</dd>
+          <dd style="font-weight: 600; color: var(--color-gray-800);">{{ request.query_dict.race | default("Selected Race") }}</dd>
         </div>
         <div>
           <dt style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); font-weight: 600; margin-bottom: .25rem;">Distance</dt>
-          <dd style="color: var(--color-gray-700);">{{ request.params.distance | default("—") }}</dd>
+          <dd style="color: var(--color-gray-700);">{{ request.query_dict.distance | default("—") }}</dd>
         </div>
         <div>
           <dt style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); font-weight: 600; margin-bottom: .25rem;">Registrant</dt>
@@ -73,4 +84,10 @@
   </div>
 </section>
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

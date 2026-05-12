@@ -1,6 +1,17 @@
-{% extends "./layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Mermaid Series — Women's Racing Events") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
 
 <!-- =============================================
      HERO
@@ -56,7 +67,7 @@
       <a href="/races" class="btn btn-outline">View All Races</a>
     </div>
 
-    {% module "featured_races" path="./../../modules/featured-races.module" label="Featured Races" %}
+    {% module "featured_races" path="mermaid-race-portal/modules/featured-races.module" label="Featured Races" %}
   </div>
 </section>
 
@@ -71,10 +82,10 @@
     </div>
     <div class="grid grid-4">
       {% for step in [
-          {"num": "01", "icon": "search", "title": "Find Your Race", "desc": "Browse our full calendar of events filtered by location, distance, and date. Every race includes full details, pricing, and registration info."},
-          {"num": "02", "icon": "user-plus", "title": "Create an Account", "desc": "Sign up for a free runner account to manage all your registrations, update your profile, and access your confirmation details."},
-          {"num": "03", "icon": "clipboard", "title": "Register", "desc": "Choose your distance, fill in participant details, accept the waiver, and complete your registration in minutes."},
-          {"num": "04", "icon": "flag", "title": "Race Day!", "desc": "You'll receive a confirmation email with everything you need. Show up, pin your bib, and run your race!"}
+          {"num": "01", "title": "Find Your Race", "desc": "Browse our full calendar of events filtered by location, distance, and date. Every race includes full details, pricing, and registration info."},
+          {"num": "02", "title": "Create an Account", "desc": "Sign up for a free runner account to manage all your registrations, update your profile, and access your confirmation details."},
+          {"num": "03", "title": "Register", "desc": "Choose your distance, fill in participant details, accept the waiver, and complete your registration in minutes."},
+          {"num": "04", "title": "Race Day!", "desc": "You'll receive a confirmation email with everything you need. Show up, pin your bib, and run your race!"}
       ] %}
       <div style="background: var(--color-white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); text-align: center;">
         <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.25rem; font-weight: 700; color: var(--color-primary);">{{ step.num }}</div>
@@ -97,12 +108,11 @@
     </div>
     <div class="grid grid-3">
       {% for cat in [
-          {"title": "Sprint Triathlon", "desc": "Swim 0.5 mi · Bike 12.4 mi · Run 3.1 mi", "icon": "🏊 🚴 🏃", "color": "#00A99D"},
-          {"title": "Aquathlon", "desc": "Swim + Run combination events", "icon": "🏊 🏃", "color": "#1A2B4A"},
-          {"title": "Running Events", "desc": "5K, 10K, and Half Marathon distances", "icon": "🏃", "color": "#F5A623"}
+          {"title": "Sprint Triathlon", "desc": "Swim 0.5 mi · Bike 12.4 mi · Run 3.1 mi", "color": "#00A99D"},
+          {"title": "Aquathlon", "desc": "Swim + Run combination events", "color": "#1A2B4A"},
+          {"title": "Running Events", "desc": "5K, 10K, and Half Marathon distances", "color": "#F5A623"}
       ] %}
       <div style="background: var(--color-white); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow); border-top: 4px solid {{ cat.color }}; text-align: center;">
-        <div style="font-size: 2rem; margin-bottom: 1rem;">{{ cat.icon }}</div>
         <h3 style="font-size: 1.25rem; margin-bottom: .75rem; color: {{ cat.color }};">{{ cat.title }}</h3>
         <p style="font-size: .875rem; color: var(--color-gray-500); margin: 0;">{{ cat.desc }}</p>
       </div>
@@ -149,4 +159,10 @@
   </div>
 </section>
 
-{% endblock %}
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>

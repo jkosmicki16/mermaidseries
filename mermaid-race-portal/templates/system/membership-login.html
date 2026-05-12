@@ -1,24 +1,38 @@
-{% extends "./../layouts/base.html" %}
+<!doctype html>
+<html lang="{{ html_lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ content.html_title | default("Log In — Mermaid Series") }}</title>
+  {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
+  {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
+  {{ standard_header_includes }}
+</head>
+<body>
+{% include "mermaid-race-portal/templates/partials/header.html" %}
 
-{% block body %}
+<main>
+
 <section style="min-height: calc(100vh - var(--header-height)); background: var(--color-gray-50); display: flex; align-items: center; padding: 3rem 0;">
   <div class="container" style="max-width: 440px;">
 
     <div style="text-align: center; margin-bottom: 2rem;">
       {% if theme.logo.src %}
-        <img src="{{ theme.logo.src }}" alt="{{ theme.site_name }}" height="48" style="margin: 0 auto 1.5rem;">
+        <img src="{{ theme.logo.src }}" alt="Mermaid Series" height="48" style="margin: 0 auto 1.5rem;">
       {% endif %}
       <h1 style="font-size: 1.75rem; margin-bottom: .5rem;">Welcome back, Runner!</h1>
       <p style="color: var(--color-gray-500);">Log in to access your dashboard and registrations.</p>
     </div>
 
     <div style="background: var(--color-white); border-radius: var(--border-radius-xl); box-shadow: var(--shadow-lg); padding: 2.5rem; border: 1px solid var(--color-gray-100);">
-      {% membership_login_form redirect_url="/dashboard" label="Log in" submit_button_text="Log In" %}
+      {# HubSpot membership login form is injected here by the CMS when this
+         page is designated as the Login Page in Settings > Website > Private Content #}
+      {{ content.main_content }}
     </div>
 
     <p style="text-align: center; margin-top: 1.5rem; font-size: .875rem; color: var(--color-gray-500);">
       Don't have an account?
-      <a href="/register" style="color: var(--color-primary); font-weight: 600;">Create one free</a>
+      <a href="/register-account" style="color: var(--color-primary); font-weight: 600;">Create one free</a>
     </p>
     <p style="text-align: center; margin-top: .5rem; font-size: .875rem;">
       <a href="/forgot-password" style="color: var(--color-gray-400);">Forgot your password?</a>
@@ -26,4 +40,11 @@
 
   </div>
 </section>
-{% endblock %}
+
+</main>
+
+{% include "mermaid-race-portal/templates/partials/footer.html" %}
+{{ require_js(get_asset_url("mermaid-race-portal/js/main.js"), {"position": "footer"}) }}
+{{ standard_footer_includes }}
+</body>
+</html>
