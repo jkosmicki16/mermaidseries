@@ -1,0 +1,46 @@
+{% extends "./../layouts/base.html" %}
+
+{% block body %}
+<section style="background: var(--color-gray-50); padding: 3rem 0; min-height: calc(100vh - var(--header-height));">
+  <div class="container" style="max-width: 560px;">
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+      {% if theme.logo.src %}
+        <img src="{{ theme.logo.src }}" alt="{{ theme.site_name }}" height="48" style="margin: 0 auto 1.5rem;">
+      {% endif %}
+      <h1 style="font-size: 1.75rem; margin-bottom: .5rem;">Create Your Runner Account</h1>
+      <p style="color: var(--color-gray-500);">Register once, manage all your race entries from one place.</p>
+    </div>
+
+    <div style="background: var(--color-white); border-radius: var(--border-radius-xl); box-shadow: var(--shadow-lg); padding: 2.5rem; border: 1px solid var(--color-gray-100);">
+      <!-- Benefits -->
+      <div style="display: flex; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--color-gray-100);">
+        {% for benefit in [
+            {"icon": "🏅", "text": "Track all your race registrations"},
+            {"icon": "⚡", "text": "Fast checkout with saved info"},
+            {"icon": "📧", "text": "Race day reminders & updates"}
+        ] %}
+        <div style="flex: 1; text-align: center; font-size: .8rem; color: var(--color-gray-600);">
+          <div style="font-size: 1.5rem; margin-bottom: .25rem;">{{ benefit.icon }}</div>
+          {{ benefit.text }}
+        </div>
+        {% endfor %}
+      </div>
+
+      {% membership_register_form redirect_url="/dashboard" label="Register" submit_button_text="Create Account" %}
+    </div>
+
+    <p style="text-align: center; margin-top: 1.5rem; font-size: .875rem; color: var(--color-gray-500);">
+      Already have an account?
+      <a href="/login" style="color: var(--color-primary); font-weight: 600;">Log in here</a>
+    </p>
+
+    <p style="text-align: center; margin-top: 1rem; font-size: .75rem; color: var(--color-gray-400);">
+      By creating an account, you agree to our
+      <a href="/terms-of-service" style="color: var(--color-gray-500);">Terms of Service</a> and
+      <a href="/privacy-policy" style="color: var(--color-gray-500);">Privacy Policy</a>.
+    </p>
+
+  </div>
+</section>
+{% endblock %}

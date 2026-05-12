@@ -1,0 +1,47 @@
+{% set logo = theme.logo %}
+{% set site_name = theme.site_name %}
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="header-inner">
+
+      <!-- Logo -->
+      <div class="header-logo">
+        <a href="/" aria-label="{{ site_name }} — Home">
+          {% if logo.src %}
+            <img src="{{ logo.src }}" alt="{{ logo.alt | default(site_name) }}" height="40">
+          {% else %}
+            <span class="header-logo-text">{{ site_name }}</span>
+          {% endif %}
+        </a>
+      </div>
+
+      <!-- Primary Navigation -->
+      <nav class="header-nav" id="header-nav" aria-label="Primary navigation">
+        <a href="/">Home</a>
+        <a href="/races">Find a Race</a>
+        <a href="/about">About</a>
+        <a href="/faq">FAQ</a>
+        <a href="/contact">Contact</a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        {% if contact.is_logged_in %}
+          <a href="/dashboard" class="btn btn-outline btn-sm">My Dashboard</a>
+          <a href="{% logout_url %}" class="btn btn-sm" style="color: var(--color-gray-600)">Log Out</a>
+        {% else %}
+          <a href="/login" class="btn btn-outline btn-sm">Log In</a>
+          <a href="/races" class="btn btn-primary btn-sm">Register Now</a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile menu toggle -->
+      <button class="header-menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="header-nav" aria-label="Toggle navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+    </div>
+  </div>
+</header>

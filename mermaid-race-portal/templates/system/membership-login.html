@@ -1,0 +1,29 @@
+{% extends "./../layouts/base.html" %}
+
+{% block body %}
+<section style="min-height: calc(100vh - var(--header-height)); background: var(--color-gray-50); display: flex; align-items: center; padding: 3rem 0;">
+  <div class="container" style="max-width: 440px;">
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+      {% if theme.logo.src %}
+        <img src="{{ theme.logo.src }}" alt="{{ theme.site_name }}" height="48" style="margin: 0 auto 1.5rem;">
+      {% endif %}
+      <h1 style="font-size: 1.75rem; margin-bottom: .5rem;">Welcome back, Runner!</h1>
+      <p style="color: var(--color-gray-500);">Log in to access your dashboard and registrations.</p>
+    </div>
+
+    <div style="background: var(--color-white); border-radius: var(--border-radius-xl); box-shadow: var(--shadow-lg); padding: 2.5rem; border: 1px solid var(--color-gray-100);">
+      {% membership_login_form redirect_url="/dashboard" label="Log in" submit_button_text="Log In" %}
+    </div>
+
+    <p style="text-align: center; margin-top: 1.5rem; font-size: .875rem; color: var(--color-gray-500);">
+      Don't have an account?
+      <a href="/register" style="color: var(--color-primary); font-weight: 600;">Create one free</a>
+    </p>
+    <p style="text-align: center; margin-top: .5rem; font-size: .875rem;">
+      <a href="/forgot-password" style="color: var(--color-gray-400);">Forgot your password?</a>
+    </p>
+
+  </div>
+</section>
+{% endblock %}

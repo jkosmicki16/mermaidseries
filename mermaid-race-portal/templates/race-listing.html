@@ -1,0 +1,60 @@
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span>Find a Race</span>
+    </nav>
+    {% module "listing_heading" path="@hubspot/text" field="text" label="Page Heading" value="<h1>Find a Race</h1>" %}
+    {% module "listing_body" path="@hubspot/text" field="text" label="Page Description" value="<p>Browse all upcoming Mermaid Series events. Filter by location, distance, and date to find the perfect race for you.</p>" %}
+  </div>
+</div>
+
+<section class="section--sm">
+  <div class="container">
+
+    <!-- Search & Filter Bar -->
+    <div class="search-bar" style="margin-bottom: 1.5rem;">
+      <input type="text" class="form-control" id="race-search" placeholder="Search by race name or location…" aria-label="Search races">
+      <select class="form-control" id="filter-type" aria-label="Filter by type" style="max-width: 200px;">
+        <option value="">All Types</option>
+        <option value="triathlon">Triathlon</option>
+        <option value="aquathlon">Aquathlon</option>
+        <option value="running">Running</option>
+      </select>
+      <select class="form-control" id="filter-state" aria-label="Filter by state" style="max-width: 180px;">
+        <option value="">All States</option>
+        <option value="ca">California</option>
+        <option value="ny">New York</option>
+        <option value="tx">Texas</option>
+        <option value="fl">Florida</option>
+        <option value="il">Illinois</option>
+      </select>
+      <button class="btn btn-primary" id="search-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="filter-bar" id="status-filters" role="group" aria-label="Filter by status">
+      <button class="filter-btn active" data-filter="all">All Races</button>
+      <button class="filter-btn" data-filter="open">Open Registration</button>
+      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn" data-filter="completed">Past Races</button>
+    </div>
+
+    <!-- Results count -->
+    <p style="color: var(--color-gray-500); font-size: .875rem; margin-bottom: 1.5rem;" id="results-count">Loading races…</p>
+
+    <!-- Race Grid (populated by HubDB query module) -->
+    {% module "race_listing_grid" path="./../../modules/race-search.module" label="Race Listing Grid" %}
+
+  </div>
+</section>
+
+{% endblock %}

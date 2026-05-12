@@ -1,0 +1,14 @@
+{% extends "./../layouts/base.html" %}
+{% block body %}
+<section style="min-height: 70vh; display: flex; align-items: center; padding: 5rem 0; text-align: center;">
+  <div class="container">
+    <div style="font-size: 6rem; font-weight: 700; color: var(--color-gray-200); line-height: 1; margin-bottom: 1rem;">404</div>
+    <h1 style="color: var(--color-secondary); margin-bottom: 1rem;">Page Not Found</h1>
+    <p style="color: var(--color-gray-500); font-size: 1.125rem; max-width: 480px; margin: 0 auto 2.5rem;">The page you're looking for doesn't exist or may have been moved.</p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/" class="btn btn-primary">Go to Homepage</a>
+      <a href="/races" class="btn btn-outline">Browse Races</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

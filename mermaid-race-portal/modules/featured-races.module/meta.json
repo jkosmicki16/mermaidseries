@@ -1,0 +1,9 @@
+{
+  "label": "Featured Races (HubDB)",
+  "css_assets": [],
+  "js_assets": [],
+  "other_assets": [],
+  "smart_type": "NOT_SMART",
+  "tags": ["race", "hubdb", "featured"],
+  "is_available_for_new_content": true
+}

@@ -1,0 +1,26 @@
+{
+  "label": "Mermaid Race Portal",
+  "preview_path": "templates/home.html",
+  "screenshot_path": "",
+  "enable_domain_stylesheets": false,
+  "hide_hubspot_branding": false,
+  "version": "1.0.0",
+  "author": {
+    "name": "Mermaid Series",
+    "url": "https://mermaidseries.com"
+  },
+  "documentation_url": "",
+  "description": "A complete race registration and runner portal platform for Mermaid Series events.",
+  "license": "",
+  "allow_client_to_change_default_modules": true,
+  "default_font": {
+    "family": "Inter",
+    "fallback": "sans-serif",
+    "variants": [
+      { "path": "", "style": "normal", "weight": "400" },
+      { "path": "", "style": "normal", "weight": "500" },
+      { "path": "", "style": "normal", "weight": "600" },
+      { "path": "", "style": "normal", "weight": "700" }
+    ]
+  }
+}

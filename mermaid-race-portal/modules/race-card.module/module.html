@@ -1,0 +1,71 @@
+<article class="race-card" aria-label="{{ module.race_name }}">
+
+  <div class="race-card__image">
+    {% if module.race_image.src %}
+      <img src="{{ module.race_image.src }}" alt="{{ module.race_image.alt | default(module.race_name) }}" loading="lazy" width="480" height="320">
+    {% else %}
+      <div style="width:100%;height:100%;background:linear-gradient(135deg,var(--color-secondary) 0%,#2563EB 100%);display:flex;align-items:center;justify-content:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+    {% endif %}
+    <div class="race-card__status">
+      {% if module.race_status == "open" %}
+        <span class="badge badge-success">Registration Open</span>
+      {% elif module.race_status == "upcoming" %}
+        <span class="badge badge-secondary">Coming Soon</span>
+      {% elif module.race_status == "closed" %}
+        <span class="badge badge-warning">Reg. Closed</span>
+      {% elif module.race_status == "completed" %}
+        <span class="badge badge-gray">Completed</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="race-card__body">
+
+    {% if module.race_distances %}
+    <div class="race-card__distances">
+      {% for dist in module.race_distances | split(",") %}
+        <span class="badge badge-primary">{{ dist | trim }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <h3 class="race-card__title">
+      <a href="{{ module.race_url }}">{{ module.race_name }}</a>
+    </h3>
+
+    <div class="race-card__meta">
+      <div class="race-card__meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div>
+          <span class="race-card__meta-label">Date</span>
+          <span class="race-card__meta-value">{{ module.race_date }}</span>
+        </div>
+      </div>
+      <div class="race-card__meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div>
+          <span class="race-card__meta-label">Location</span>
+          <span class="race-card__meta-value">{{ module.race_location }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="race-card__footer">
+      <div class="race-card__price">
+        {{ module.race_price }}
+        <span>/ entry</span>
+      </div>
+      {% if module.race_status == "open" %}
+        <a href="{{ module.reg_url }}" class="btn btn-primary btn-sm">Register</a>
+      {% elif module.race_status == "upcoming" %}
+        <a href="{{ module.race_url }}" class="btn btn-outline btn-sm">View Details</a>
+      {% else %}
+        <a href="{{ module.race_url }}" class="btn btn-outline btn-sm">View Details</a>
+      {% endif %}
+    </div>
+
+  </div>
+
+</article>

@@ -1,0 +1,77 @@
+[
+  {
+    "type": "color",
+    "name": "primary_color",
+    "label": "Primary Color",
+    "default": { "color": "#00A99D", "opacity": 100 }
+  },
+  {
+    "type": "color",
+    "name": "secondary_color",
+    "label": "Secondary Color",
+    "default": { "color": "#1A2B4A", "opacity": 100 }
+  },
+  {
+    "type": "color",
+    "name": "accent_color",
+    "label": "Accent Color",
+    "default": { "color": "#F5A623", "opacity": 100 }
+  },
+  {
+    "type": "color",
+    "name": "background_color",
+    "label": "Background Color",
+    "default": { "color": "#FFFFFF", "opacity": 100 }
+  },
+  {
+    "type": "color",
+    "name": "text_color",
+    "label": "Body Text Color",
+    "default": { "color": "#2D3748", "opacity": 100 }
+  },
+  {
+    "type": "font",
+    "name": "heading_font",
+    "label": "Heading Font",
+    "default": {
+      "font": "Inter",
+      "font_set": "GOOGLE",
+      "size": 16,
+      "size_unit": "px",
+      "color": "#1A2B4A",
+      "styles": {
+        "font-weight": "700"
+      }
+    }
+  },
+  {
+    "type": "font",
+    "name": "body_font",
+    "label": "Body Font",
+    "default": {
+      "font": "Inter",
+      "font_set": "GOOGLE",
+      "size": 16,
+      "size_unit": "px",
+      "color": "#2D3748",
+      "styles": {
+        "font-weight": "400"
+      }
+    }
+  },
+  {
+    "type": "text",
+    "name": "site_name",
+    "label": "Site Name",
+    "default": "Mermaid Series"
+  },
+  {
+    "type": "image",
+    "name": "logo",
+    "label": "Logo",
+    "default": {
+      "src": "",
+      "alt": "Mermaid Series"
+    }
+  }
+]

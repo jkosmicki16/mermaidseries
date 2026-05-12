@@ -1,0 +1,19 @@
+[
+  {
+    "name": "default_limit",
+    "label": "Races per page",
+    "type": "number",
+    "default": 12
+  },
+  {
+    "name": "default_sort",
+    "label": "Default sort",
+    "type": "choice",
+    "choices": [
+      ["date", "Date (soonest first)"],
+      ["name", "Name (A-Z)"],
+      ["price", "Price (low to high)"]
+    ],
+    "default": "date"
+  }
+]

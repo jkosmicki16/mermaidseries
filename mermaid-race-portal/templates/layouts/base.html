@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="{{ html_lang }}" {% if site_settings.favicon %}{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  {% if page_meta.html_title %}
+    <title>{{ page_meta.html_title }}</title>
+  {% else %}
+    <title>{{ content.html_title }}</title>
+  {% endif %}
+
+  {% if page_meta.meta_description %}
+    <meta name="description" content="{{ page_meta.meta_description }}">
+  {% endif %}
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page_meta.html_title }}">
+  <meta property="og:description" content="{{ page_meta.meta_description }}">
+  {% if content.featured_image %}
+    <meta property="og:image" content="{{ content.featured_image }}">
+  {% endif %}
+
+  <!-- Canonical -->
+  <link rel="canonical" href="{{ request.path }}">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Theme CSS -->
+  {{ require_css(get_asset_url("../../css/main.css")) }}
+
+  <!-- HubSpot Required -->
+  {{ standard_header_includes }}
+</head>
+<body class="{{ body_classes }}">
+
+  {% include "./../../templates/partials/header.html" %}
+
+  <main id="main-content" tabindex="-1">
+    {% block body %}{% endblock %}
+  </main>
+
+  {% include "./../../templates/partials/footer.html" %}
+
+  <!-- HubSpot Required -->
+  {{ standard_footer_includes }}
+
+  <!-- Theme JS -->
+  {{ require_js(get_asset_url("../../js/main.js"), {"position": "footer"}) }}
+
+</body>
+</html>

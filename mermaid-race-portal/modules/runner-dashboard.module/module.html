@@ -1,0 +1,81 @@
+{% if contact.is_logged_in %}
+
+{#
+  Dashboard module: shows the logged-in runner's upcoming registrations.
+
+  Data source: This module queries HubSpot Deals (Registrations pipeline)
+  associated with the current contact via the CRM associations API.
+
+  Implementation note: HubL does not natively support querying Deals by
+  contact association. This module shows a structural placeholder.
+  The registration data is best loaded via a JavaScript fetch to a HubSpot
+  serverless function (if available) or via a third-party integration.
+
+  For accounts without serverless functions, use HubSpot Workflow automation
+  to write registration data back to custom Contact properties for display here.
+#}
+
+<div id="runner-registrations">
+
+  <!-- Loading state -->
+  <div id="reg-loading" style="text-align: center; padding: 2rem;">
+    <div style="width: 32px; height: 32px; border: 3px solid var(--color-gray-200); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+    <p style="color: var(--color-gray-400); font-size: .875rem;">Loading your registrations…</p>
+  </div>
+
+  <!-- Populated via JS (see below) -->
+  <div id="reg-list" style="display: none;"></div>
+
+  <!-- Empty state (shown when no registrations) -->
+  <div id="reg-empty" style="display: none; text-align: center; padding: 2.5rem; background: var(--color-gray-50); border-radius: var(--border-radius-lg);">
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-300)" stroke-width="1.5" style="margin: 0 auto 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <h3 style="color: var(--color-gray-500); font-size: 1rem; margin-bottom: .5rem;">No upcoming registrations</h3>
+    <p style="color: var(--color-gray-400); font-size: .875rem; margin-bottom: 1.5rem;">Find a race and register to see it here.</p>
+    <a href="/races" class="btn btn-primary btn-sm">Find a Race</a>
+  </div>
+
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+.reg-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; padding: 1rem; border-radius: var(--border-radius); border: 1px solid var(--color-gray-200); margin-bottom: .75rem; }
+.reg-row:hover { background: var(--color-gray-50); }
+</style>
+
+<script>
+(function() {
+  // Contact email available from HubSpot membership context
+  const contactEmail = '{{ contact.email }}';
+  const contactId = '{{ contact.vid }}';
+
+  // Simulate loading registrations
+  // In production: replace with a fetch to your data source
+  // Option A: HubSpot Serverless Function endpoint
+  // Option B: HubDB "registrations" table filtered by contact email
+  // Option C: Custom Contact properties set by Workflow automation
+
+  setTimeout(function() {
+    document.getElementById('reg-loading').style.display = 'none';
+
+    // Example: Try to fetch from HubDB registrations table
+    // NOTE: HubDB requires the table to be publicly accessible
+    // For private data, use serverless functions with CRM API
+
+    // For now, show empty state with instructions
+    document.getElementById('reg-empty').style.display = 'block';
+
+    // Update stats
+    const statTotal = document.getElementById('stat-total');
+    const statUpcoming = document.getElementById('stat-upcoming');
+    const statCompleted = document.getElementById('stat-completed');
+    if (statTotal) statTotal.textContent = '0';
+    if (statUpcoming) statUpcoming.textContent = '0';
+    if (statCompleted) statCompleted.textContent = '0';
+
+  }, 800);
+})();
+</script>
+
+{% else %}
+<p style="color: var(--color-gray-500);">Please log in to view your registrations.</p>
+{% endif %}

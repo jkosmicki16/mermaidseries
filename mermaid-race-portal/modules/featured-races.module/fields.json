@@ -1,0 +1,14 @@
+[
+  {
+    "name": "limit",
+    "label": "Number of races to show",
+    "type": "number",
+    "default": 3
+  },
+  {
+    "name": "show_status_filter",
+    "label": "Show status filter",
+    "type": "boolean",
+    "default": true
+  }
+]

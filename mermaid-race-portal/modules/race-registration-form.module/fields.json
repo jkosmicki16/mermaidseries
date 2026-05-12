@@ -1,0 +1,15 @@
+[
+  {
+    "name": "registration_form_id",
+    "label": "HubSpot Registration Form ID",
+    "type": "text",
+    "default": "",
+    "help_text": "Paste the HubSpot Form ID for the race registration form here."
+  },
+  {
+    "name": "success_redirect",
+    "label": "Success Redirect URL",
+    "type": "text",
+    "default": "/registration-confirmation"
+  }
+]

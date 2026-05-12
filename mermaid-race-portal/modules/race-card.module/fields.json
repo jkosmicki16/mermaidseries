@@ -1,0 +1,62 @@
+[
+  {
+    "name": "race_name",
+    "label": "Race Name",
+    "type": "text",
+    "default": "Race Name"
+  },
+  {
+    "name": "race_date",
+    "label": "Race Date",
+    "type": "text",
+    "default": "Saturday, June 1, 2025"
+  },
+  {
+    "name": "race_location",
+    "label": "Location",
+    "type": "text",
+    "default": "City, State"
+  },
+  {
+    "name": "race_distances",
+    "label": "Distance Tags (comma-separated)",
+    "type": "text",
+    "default": "Sprint, Aquathlon"
+  },
+  {
+    "name": "race_price",
+    "label": "Starting Price",
+    "type": "text",
+    "default": "$75"
+  },
+  {
+    "name": "race_status",
+    "label": "Status",
+    "type": "choice",
+    "choices": [
+      ["open", "Open"],
+      ["upcoming", "Coming Soon"],
+      ["closed", "Closed"],
+      ["completed", "Completed"]
+    ],
+    "default": "open"
+  },
+  {
+    "name": "race_image",
+    "label": "Race Image",
+    "type": "image",
+    "default": { "src": "", "alt": "" }
+  },
+  {
+    "name": "race_url",
+    "label": "Race Detail URL",
+    "type": "text",
+    "default": "/race/sample-race"
+  },
+  {
+    "name": "reg_url",
+    "label": "Registration URL",
+    "type": "text",
+    "default": "/register"
+  }
+]
