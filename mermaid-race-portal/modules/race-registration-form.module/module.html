@@ -1,58 +1,61 @@
 {% set race_id = request.query_dict.race | default("") %}
-{% set race = "" %}
+{% set preselected_race = "" %}
 {% if race_id %}
-  {% set race = hubdb_table_rows("races", "hs_id__eq=" ~ race_id ~ "&limit=1")[0] %}
+  {% set preselected_race = hubdb_table_rows("races", "hs_id__eq=" ~ race_id ~ "&limit=1")[0] %}
 {% endif %}
 
-<div id="registration-wrapper">
+{% set all_races = hubdb_table_rows("races", "status__eq=open&orderBy=date") %}
 
-  <!-- Race Summary Card -->
-  {% if race %}
-  <div style="background: var(--color-white); border-radius: var(--border-radius-lg); border: 1px solid var(--color-gray-200); padding: 1.5rem; margin-bottom: 2rem; display: flex; gap: 1.5rem; align-items: center;">
-    {% if race.image %}
-      <img src="{{ race.image.url }}" alt="{{ race.name }}" width="100" height="68" style="border-radius: var(--border-radius); object-fit: cover; flex-shrink: 0;">
+<div id="registration-wrapper" style="max-width:820px;margin:0 auto;">
+
+  {# ── RACE SUMMARY (when coming from a race detail page) ── #}
+  {% if preselected_race %}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:1.5rem;margin-bottom:2rem;display:flex;gap:1.5rem;align-items:center;">
+    {% if preselected_race.image %}
+      <img src="{{ preselected_race.image.url }}" alt="{{ preselected_race.name }}" width="100" height="68" style="border-radius:.5rem;object-fit:cover;flex-shrink:0;">
     {% endif %}
     <div>
-      <p style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-primary); font-weight: 600; margin-bottom: .25rem;">You're registering for</p>
-      <h2 style="font-size: 1.25rem; margin-bottom: .25rem;">{{ race.name }}</h2>
-      <p style="font-size: .875rem; color: var(--color-gray-500); margin: 0;">
-        {{ race.date | datetimeformat("%A, %B %-d, %Y") }} · {{ race.location }}
-      </p>
+      <p style="font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:#00A99D;font-weight:600;margin-bottom:.25rem;">You're registering for</p>
+      <h2 style="font-size:1.25rem;margin-bottom:.25rem;">{{ preselected_race.name }}</h2>
+      <p style="font-size:.875rem;color:#6b7280;margin:0;">{{ preselected_race.location }}</p>
     </div>
-    {% if race.price %}
-    <div style="margin-left: auto; text-align: right; flex-shrink: 0;">
-      <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">${{ race.price }}</div>
-      <div style="font-size: .75rem; color: var(--color-gray-400);">starting price</div>
+    {% if preselected_race.price %}
+    <div style="margin-left:auto;text-align:right;flex-shrink:0;">
+      <div style="font-size:1.5rem;font-weight:700;color:#00A99D;">${{ preselected_race.price }}</div>
+      <div style="font-size:.75rem;color:#9ca3af;">starting price</div>
     </div>
     {% endif %}
   </div>
   {% endif %}
 
-  <!-- Step 1: Select Race + Distance -->
-  <div class="dashboard-section" id="step-1">
-    <div class="dashboard-section__header">
-      <h2 class="dashboard-section__title">Step 1: Select Your Race &amp; Distance</h2>
-    </div>
+  {# ── STEP 1: RACE & DISTANCE ── #}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
+    <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Step 1: Select Your Race &amp; Distance</h2>
 
-    <div class="form-group">
-      <label class="form-label" for="race-select">Race <span class="required">*</span></label>
-      {% set all_races = hubdb_table_rows("races", "status__eq=open&orderBy=date") %}
-      <select class="form-control" id="race-select" name="race_id" required onchange="updateDistances(this.value)">
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="race-select">Race <span style="color:#ef4444;">*</span></label>
+      <select id="race-select" name="race_id" required onchange="msUpdateRace(this.value)"
+        style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;color:#111827;background:#fff;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .75rem center;">
         <option value="">Select a race…</option>
         {% for r in all_races %}
-          <option value="{{ r.hs_id }}" data-distances="{{ r.distances }}" data-price="{{ r.price }}" {% if race and race.hs_id == r.hs_id %}selected{% endif %}>
-            {{ r.name }} — {{ r.date | datetimeformat("%b %-d, %Y") }}
+          <option value="{{ r.hs_id }}"
+            data-distances="{{ r.distances }}"
+            data-price="{{ r.price }}"
+            data-payment-url="{{ r.payment_link_url | default('') }}"
+            {% if preselected_race and preselected_race.hs_id == r.hs_id %}selected{% endif %}>
+            {{ r.name }} — {{ r.location }}{% if r.price %} · ${{ r.price }}{% endif %}
           </option>
         {% endfor %}
       </select>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="distance-select">Distance <span class="required">*</span></label>
-      <select class="form-control" id="distance-select" name="distance" required>
+    <div>
+      <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="distance-select">Distance <span style="color:#ef4444;">*</span></label>
+      <select id="distance-select" name="distance" required
+        style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;color:#111827;background:#fff;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .75rem center;">
         <option value="">Select a distance…</option>
-        {% if race and race.distances %}
-          {% for d in race.distances | split(",") %}
+        {% if preselected_race and preselected_race.distances %}
+          {% for d in preselected_race.distances | split(",") %}
             <option value="{{ d | trim }}">{{ d | trim }}</option>
           {% endfor %}
         {% endif %}
@@ -60,51 +63,49 @@
     </div>
   </div>
 
-  <!-- Step 2: Participant Info -->
-  <div class="dashboard-section" id="step-2">
-    <div class="dashboard-section__header">
-      <h2 class="dashboard-section__title">Step 2: Participant Information</h2>
-    </div>
+  {# ── STEP 2: PARTICIPANT INFO ── #}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
+    <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Step 2: Participant Information</h2>
 
-    {% if module.registration_form_id %}
-      <!-- Render HubSpot form if form ID is configured -->
-      {% form "registration_form"
-        form_to_use="{{ module.registration_form_id }}"
-        response_redirect_url="{{ module.success_redirect }}"
-      %}
-    {% else %}
-    <!-- Fallback: native HTML form structure (connect to HubSpot form via JS embed) -->
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label" for="firstname">First Name <span class="required">*</span></label>
-        <input type="text" class="form-control" id="firstname" name="firstname" required autocomplete="given-name">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-firstname">First Name <span style="color:#ef4444;">*</span></label>
+        <input type="text" id="reg-firstname" name="firstname" required autocomplete="given-name"
+          value="{{ contact.firstname | default('') }}"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
-      <div class="form-group">
-        <label class="form-label" for="lastname">Last Name <span class="required">*</span></label>
-        <input type="text" class="form-control" id="lastname" name="lastname" required autocomplete="family-name">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-lastname">Last Name <span style="color:#ef4444;">*</span></label>
+        <input type="text" id="reg-lastname" name="lastname" required autocomplete="family-name"
+          value="{{ contact.lastname | default('') }}"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
     </div>
 
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label" for="email">Email Address <span class="required">*</span></label>
-        <input type="email" class="form-control" id="email" name="email" required autocomplete="email"
-          value="{{ contact.email | default('') }}">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-email">Email <span style="color:#ef4444;">*</span></label>
+        <input type="email" id="reg-email" name="email" required autocomplete="email"
+          value="{{ contact.email | default('') }}"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
-      <div class="form-group">
-        <label class="form-label" for="phone">Phone Number</label>
-        <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-phone">Phone</label>
+        <input type="tel" id="reg-phone" name="phone" autocomplete="tel"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
     </div>
 
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label" for="dob">Date of Birth <span class="required">*</span></label>
-        <input type="date" class="form-control" id="dob" name="date_of_birth" required autocomplete="bday">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-dob">Date of Birth <span style="color:#ef4444;">*</span></label>
+        <input type="date" id="reg-dob" name="date_of_birth" required autocomplete="bday"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
-      <div class="form-group">
-        <label class="form-label" for="gender">Gender</label>
-        <select class="form-control" id="gender" name="gender">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-gender">Gender</label>
+        <select id="reg-gender" name="gender"
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;background:#fff;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .75rem center;">
           <option value="">Select…</option>
           <option value="female">Female</option>
           <option value="male">Male</option>
@@ -113,118 +114,151 @@
         </select>
       </div>
     </div>
-
-    <!-- Step 3: Emergency Contact -->
-    <div style="padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--color-gray-100);">
-      <h3 style="font-size: 1rem; font-weight: 600; color: var(--color-secondary); margin-bottom: 1.25rem;">Emergency Contact</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label" for="ec-name">Emergency Contact Name <span class="required">*</span></label>
-          <input type="text" class="form-control" id="ec-name" name="emergency_contact_name" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="ec-phone">Emergency Contact Phone <span class="required">*</span></label>
-          <input type="tel" class="form-control" id="ec-phone" name="emergency_contact_phone" required>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 4: Waiver -->
-    <div style="padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--color-gray-100);">
-      <h3 style="font-size: 1rem; font-weight: 600; color: var(--color-secondary); margin-bottom: 1.25rem;">Waiver &amp; Release of Liability</h3>
-      <div style="height: 200px; overflow-y: auto; padding: 1rem; background: var(--color-gray-50); border: 1px solid var(--color-gray-200); border-radius: var(--border-radius); font-size: .875rem; color: var(--color-gray-600); line-height: 1.75; margin-bottom: 1rem;">
-        {% if race and race.waiver_text %}
-          {{ race.waiver_text }}
-        {% else %}
-          <p>I understand that participating in running, triathlon, and endurance events involves inherent risks, including but not limited to physical injury, exhaustion, illness, or death. By registering, I voluntarily assume all risks associated with participation in this event.</p>
-          <p>I, for myself and on behalf of my heirs and assigns, waive and release Mermaid Series, its officers, directors, employees, volunteers, sponsors, and all other parties associated with the production and administration of this event from any and all claims, damages, losses, and expenses arising out of my participation.</p>
-          <p>I acknowledge that I am physically fit and have completed the training necessary to participate in this event. I agree to follow all event rules and directions from event officials.</p>
-          <p>I grant permission to Mermaid Series to use photographs, video, and audio recordings of me for event promotion and marketing purposes.</p>
-          <p>I have read this waiver and release, understand its contents, and agree to be bound by its terms.</p>
-        {% endif %}
-      </div>
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="waiver-accept" name="waiver_accepted" required value="true">
-        <label class="form-check-label" for="waiver-accept">
-          <strong>I have read and agree to the Waiver &amp; Release of Liability above.</strong> I understand this is a legally binding agreement. <span class="required">*</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Marketing opt-in -->
-    <div class="form-check" style="margin-top: 1rem;">
-      <input type="checkbox" class="form-check-input" id="marketing-optin" name="marketing_optin" value="true" checked>
-      <label class="form-check-label" for="marketing-optin">
-        Keep me updated on upcoming races, training tips, and Mermaid Series news.
-      </label>
-    </div>
-
-    {% endif %}
   </div>
 
-  <!-- Step 5: Order Summary & Submit -->
-  <div class="dashboard-section" id="step-5">
-    <div class="dashboard-section__header">
-      <h2 class="dashboard-section__title">Order Summary</h2>
-    </div>
-
-    <div style="background: var(--color-gray-50); border-radius: var(--border-radius); padding: 1.5rem; margin-bottom: 1.5rem;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: .75rem; font-size: .9375rem;">
-        <span style="color: var(--color-gray-600);">Registration Fee</span>
-        <span id="summary-price" style="font-weight: 600;">—</span>
+  {# ── STEP 3: EMERGENCY CONTACT ── #}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
+    <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Step 3: Emergency Contact</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-ec-name">Name <span style="color:#ef4444;">*</span></label>
+        <input type="text" id="reg-ec-name" name="emergency_contact_name" required
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
       </div>
-      <div style="border-top: 1px solid var(--color-gray-200); padding-top: .75rem; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.125rem;">
+      <div>
+        <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="reg-ec-phone">Phone <span style="color:#ef4444;">*</span></label>
+        <input type="tel" id="reg-ec-phone" name="emergency_contact_phone" required
+          style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;box-sizing:border-box;">
+      </div>
+    </div>
+  </div>
+
+  {# ── STEP 4: WAIVER ── #}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
+    <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Step 4: Waiver &amp; Release of Liability</h2>
+    <div style="height:200px;overflow-y:auto;padding:1rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:.5rem;font-size:.875rem;color:#4b5563;line-height:1.75;margin-bottom:1rem;">
+      {% if preselected_race and preselected_race.waiver_text %}
+        {{ preselected_race.waiver_text }}
+      {% else %}
+        <p>I understand that participating in running, triathlon, and endurance events involves inherent risks, including but not limited to physical injury, exhaustion, illness, or death. By registering, I voluntarily assume all risks associated with participation in this event.</p>
+        <p>I, for myself and on behalf of my heirs and assigns, waive and release Mermaid Series, its officers, directors, employees, volunteers, sponsors, and all other parties associated with the production and administration of this event from any and all claims, damages, losses, and expenses arising out of my participation.</p>
+        <p>I acknowledge that I am physically fit and have completed the training necessary to participate in this event. I agree to follow all event rules and directions from event officials.</p>
+        <p>I grant permission to Mermaid Series to use photographs, video, and audio recordings of me for event promotion and marketing purposes.</p>
+      {% endif %}
+    </div>
+    <label style="display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;">
+      <input type="checkbox" id="reg-waiver" name="waiver_accepted" required value="true" style="margin-top:.2rem;flex-shrink:0;width:18px;height:18px;accent-color:#00A99D;">
+      <span style="font-size:.9375rem;color:#374151;"><strong>I have read and agree to the Waiver &amp; Release of Liability above.</strong> I understand this is a legally binding agreement. <span style="color:#ef4444;">*</span></span>
+    </label>
+    <label style="display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;margin-top:.875rem;">
+      <input type="checkbox" id="reg-optin" name="marketing_optin" value="true" checked style="margin-top:.2rem;flex-shrink:0;width:18px;height:18px;accent-color:#00A99D;">
+      <span style="font-size:.875rem;color:#6b7280;">Keep me updated on upcoming races, training tips, and Mermaid Series news.</span>
+    </label>
+  </div>
+
+  {# ── STEP 5: ORDER SUMMARY + PAYMENT ── #}
+  <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
+    <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Step 5: Order Summary &amp; Payment</h2>
+
+    <div style="background:#f9fafb;border-radius:.5rem;padding:1.5rem;margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.75rem;font-size:.9375rem;">
+        <span style="color:#6b7280;">Registration Fee</span>
+        <span id="ms-summary-price" style="font-weight:600;">—</span>
+      </div>
+      <div style="border-top:1px solid #e5e7eb;padding-top:.75rem;display:flex;justify-content:space-between;font-weight:700;font-size:1.125rem;">
         <span>Total</span>
-        <span id="summary-total" style="color: var(--color-primary);">—</span>
+        <span id="ms-summary-total" style="color:#00A99D;">—</span>
       </div>
     </div>
 
-    <!-- Payment placeholder -->
-    <div style="background: var(--color-white); border: 2px dashed var(--color-gray-200); border-radius: var(--border-radius-lg); padding: 2rem; text-align: center; margin-bottom: 1.5rem;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-300)" stroke-width="1.5" style="margin: 0 auto .75rem;"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      <p style="color: var(--color-gray-400); font-size: .875rem; margin: 0;">
-        <strong style="display: block; margin-bottom: .25rem; color: var(--color-gray-500);">Payment Processing</strong>
-        Stripe / HubSpot Payments integration required. Connect your payment provider in the admin settings.
-      </p>
+    <!-- Payment section: shows HubSpot Payment embed or prompt to select race -->
+    <div id="ms-payment-container">
+      <div id="ms-payment-prompt" style="border:2px dashed #e5e7eb;border-radius:.75rem;padding:2rem;text-align:center;color:#9ca3af;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto .75rem;display:block;"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <p style="margin:0;font-size:.9375rem;">Select a race above to load payment options.</p>
+      </div>
+      <div id="ms-payment-embed" style="display:none;">
+        <!-- HubSpot Payment Link iframe loads here -->
+      </div>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-full btn-lg" id="submit-registration">
-      Complete Registration
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </button>
-    <p style="text-align: center; font-size: .75rem; color: var(--color-gray-400); margin-top: .75rem;">
-      🔒 Secure registration · By submitting you agree to our <a href="/terms-of-service">Terms</a>
+    <p style="text-align:center;font-size:.75rem;color:#9ca3af;margin-top:1rem;">
+      🔒 Secure checkout powered by HubSpot Payments · By completing registration you agree to our <a href="/terms-of-service" style="color:#6b7280;">Terms</a>
     </p>
   </div>
 
 </div>
 
 <script>
-function updateDistances(raceId) {
-  const select = document.getElementById('race-select');
-  const distSelect = document.getElementById('distance-select');
-  const priceEl = document.getElementById('summary-price');
-  const totalEl = document.getElementById('summary-total');
-  const opt = select.querySelector('option[value="' + raceId + '"]');
-  distSelect.innerHTML = '<option value="">Select a distance…</option>';
-  if (opt) {
-    const distances = opt.dataset.distances || '';
-    const price = opt.dataset.price || '';
-    distances.split(',').forEach(d => {
-      const o = document.createElement('option');
-      o.value = d.trim();
-      o.textContent = d.trim();
-      distSelect.appendChild(o);
-    });
-    if (price) {
-      priceEl.textContent = '$' + price;
-      totalEl.textContent = '$' + price;
+(function() {
+  var races = {};
+  {% for r in all_races %}
+  races["{{ r.hs_id }}"] = {
+    distances: "{{ r.distances | default('') }}",
+    price: "{{ r.price | default('') }}",
+    paymentUrl: "{{ r.payment_link_url | default('') }}"
+  };
+  {% endfor %}
+
+  window.msUpdateRace = function(raceId) {
+    var race = races[raceId];
+    var distSelect = document.getElementById('distance-select');
+    var priceEl = document.getElementById('ms-summary-price');
+    var totalEl = document.getElementById('ms-summary-total');
+    var prompt = document.getElementById('ms-payment-prompt');
+    var embed = document.getElementById('ms-payment-embed');
+
+    // Reset distance dropdown
+    distSelect.innerHTML = '<option value="">Select a distance…</option>';
+
+    if (!race) {
+      priceEl.textContent = '—';
+      totalEl.textContent = '—';
+      prompt.style.display = '';
+      embed.style.display = 'none';
+      embed.innerHTML = '';
+      return;
     }
-  }
-}
-// Init on load if race pre-selected
-window.addEventListener('DOMContentLoaded', () => {
-  const sel = document.getElementById('race-select');
-  if (sel && sel.value) updateDistances(sel.value);
-});
+
+    // Populate distances
+    if (race.distances) {
+      race.distances.split(',').forEach(function(d) {
+        var o = document.createElement('option');
+        o.value = d.trim();
+        o.textContent = d.trim();
+        distSelect.appendChild(o);
+      });
+    }
+
+    // Update price summary
+    if (race.price) {
+      priceEl.textContent = '$' + race.price;
+      totalEl.textContent = '$' + race.price;
+    } else {
+      priceEl.textContent = '—';
+      totalEl.textContent = '—';
+    }
+
+    // Load HubSpot Payment embed
+    if (race.paymentUrl) {
+      prompt.style.display = 'none';
+      embed.style.display = '';
+      embed.innerHTML = '<iframe src="' + race.paymentUrl + '?embed=true" '
+        + 'width="100%" height="560" frameborder="0" style="border-radius:.5rem;border:1px solid #e5e7eb;" '
+        + 'allow="payment" title="Secure Payment"></iframe>';
+    } else {
+      prompt.style.display = '';
+      prompt.innerHTML = '<div style="border:2px dashed #e5e7eb;border-radius:.75rem;padding:2rem;text-align:center;">'
+        + '<p style="margin:0;color:#6b7280;font-size:.9375rem;">Payment link not configured for this race. '
+        + 'Please add the payment_link_url in HubDB.</p></div>';
+      embed.style.display = 'none';
+    }
+  };
+
+  // Init on load if race pre-selected
+  document.addEventListener('DOMContentLoaded', function() {
+    var sel = document.getElementById('race-select');
+    if (sel && sel.value) msUpdateRace(sel.value);
+  });
+})();
 </script>
