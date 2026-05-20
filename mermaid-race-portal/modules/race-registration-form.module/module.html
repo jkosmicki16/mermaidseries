@@ -243,7 +243,7 @@
     if (race.paymentUrl) {
       prompt.style.display = 'none';
       embed.style.display = '';
-      embed.innerHTML = '<iframe src="' + race.paymentUrl + '?embed=true" '
+      embed.innerHTML = '<iframe src="' + race.paymentUrl + '" '
         + 'width="100%" height="560" frameborder="0" style="border-radius:.5rem;border:1px solid #e5e7eb;" '
         + 'allow="payment" title="Secure Payment"></iframe>';
     } else {
