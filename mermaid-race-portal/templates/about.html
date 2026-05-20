@@ -1,3 +1,7 @@
+<!--
+  templateType: "page"
+  isAvailableForNewContent: true
+-->
 <!doctype html>
 <html lang="{{ html_lang }}">
 <head>
@@ -12,37 +16,55 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+{% dnd_area "main_content" label="Page Content" %}
 
-<div class="page-header">
-  <div class="container">
-    {% module "about_heading" path="@hubspot/text" field="text" label="Page Heading" value="<h1>About Mermaid Series</h1>" %}
-    {% module "about_sub" path="@hubspot/text" field="text" label="Sub-heading" value="<p>Empowering women through the sport of triathlon and running since 2007.</p>" %}
-  </div>
-</div>
+  {% dnd_section
+    background_color={ "color": "#1A2B4A", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Page Header"
+          html="<div style='padding:3rem 0;color:white;'><h1 style='color:white;margin-bottom:.5rem;'>About Mermaid Series</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Empowering women through the sport of triathlon and running since 2007.</p></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-<section class="section">
-  <div class="container">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;">
-      <div>
-        {% module "about_body" path="@hubspot/rich_text" field="html" label="About Body Content" value="<h2>Our Story</h2><p>The Mermaid Series was founded with a simple mission: make triathlon and running accessible, welcoming, and empowering for women of all ages and ability levels.</p><p>From our first race in 2007, we've grown to host events across the country, welcoming thousands of women to their first finish line — and their hundredth.</p><h3>Our Values</h3><ul><li><strong>Inclusivity</strong> — Every level is welcome at the start line</li><li><strong>Community</strong> — Race day is a celebration together</li><li><strong>Empowerment</strong> — We believe every woman can cross the finish line</li><li><strong>Safety</strong> — Well-organized, supported events you can trust</li></ul>" %}
-      </div>
-      <div>
-        {% module "about_image" path="@hubspot/image" label="About Image" %}
-      </div>
-    </div>
-  </div>
-</section>
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Our Story"
+          html="<h2>Our Story</h2><p>The Mermaid Series was founded with a simple mission: make triathlon and running accessible, welcoming, and empowering for women of all ages and ability levels.</p><p>From our first race in 2007, we've grown to host events across the country, welcoming thousands of women to their first finish line — and their hundredth.</p><h3>Our Values</h3><ul><li><strong>Inclusivity</strong> — Every level is welcome at the start line</li><li><strong>Community</strong> — Race day is a celebration together</li><li><strong>Empowerment</strong> — We believe every woman can cross the finish line</li><li><strong>Safety</strong> — Well-organized, supported events you can trust</li></ul>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/image"
+          label="About Image"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-<section class="section section--gray">
-  <div class="container">
-    <div class="text-center" style="margin-bottom: 3rem;">
-      <h2>Our Team</h2>
-      <p class="text-muted" style="max-width: 540px; margin: 1rem auto 0;">Meet the passionate team behind every Mermaid Series event.</p>
-    </div>
-    {% module "team_members" path="@hubspot/rich_text" label="Team Members" field="html" value="<p>Team content goes here. Add your staff photos and bios.</p>" %}
-  </div>
-</section>
+  {% dnd_section
+    background_color={ "color": "#f9fafb", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Team Section"
+          html="<div style='text-align:center;margin-bottom:3rem;'><h2>Our Team</h2><p style='color:#6b7280;max-width:540px;margin:1rem auto 0;'>Meet the passionate team behind every Mermaid Series event.</p></div><p>Team content goes here. Add your staff photos and bios.</p>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
+{% end_dnd_area %}
 </main>
 
 {% include "mermaid-race-portal/templates/partials/footer.html" %}

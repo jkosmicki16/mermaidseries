@@ -1,3 +1,7 @@
+<!--
+  templateType: "page"
+  isAvailableForNewContent: true
+-->
 <!doctype html>
 <html lang="{{ html_lang }}">
 <head>
@@ -12,55 +16,36 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+{% dnd_area "main_content" label="Page Content" %}
 
-<div class="page-header">
-  <div class="container">
-    {% module "faq_heading" path="@hubspot/text" field="text" label="Page Heading" value="<h1>Frequently Asked Questions</h1>" %}
-    {% module "faq_sub" path="@hubspot/text" field="text" label="Sub-heading" value="<p>Everything you need to know about registering and racing with Mermaid Series.</p>" %}
-  </div>
-</div>
+  {# ── PAGE HEADER ─────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#1A2B4A", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Page Header"
+          html="<div style='padding:3rem 0;color:white;'><h1 style='color:white;margin-bottom:.5rem;'>Frequently Asked Questions</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Everything you need to know about registering and racing with Mermaid Series.</p></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-<section class="section">
-  <div class="container" style="max-width: 800px;">
+  {# ── FAQ ACCORDION ────────────────────────────────────────────────────── #}
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="mermaid-race-portal/modules/faq-accordion.module"
+          label="FAQ Questions"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-    {% set faqs = [
-      {"q": "How do I register for a race?", "a": "Click 'Browse Races' from the homepage or navigation, find your event, and click 'Register Now'. You'll need to create a free runner account or log in. The registration process takes about 5 minutes."},
-      {"q": "What distances do you offer?", "a": "We offer Sprint Triathlons (swim 0.5 mi, bike 12.4 mi, run 3.1 mi), Aquathlons (swim + run), and standalone running events including 5K, 10K, and Half Marathon distances. Check each race page for the specific distances offered at that event."},
-      {"q": "What is included in my registration?", "a": "All registrations include: finisher medal, swag bag, chip timing and results, post-race celebration, course support, and aid stations. Individual races may include additional items — check the race detail page."},
-      {"q": "Can I transfer or get a refund for my registration?", "a": "Transfer policies vary by event. Please contact us at least 14 days before race day to discuss options. Refunds are generally not available but registration transfers to another person may be possible."},
-      {"q": "What should I do if I can't make it to the race?", "a": "Contact us as soon as possible at hello@mermaidseries.com. We'll do our best to help you, whether that's a transfer to a future event or other accommodations based on our current policies."},
-      {"q": "Do I need previous race experience?", "a": "Not at all! Mermaid Series events are beginner-friendly. Many of our participants complete their very first triathlon or running race with us. Our events are designed to be supportive and welcoming for all levels."},
-      {"q": "Is there an age requirement?", "a": "Participants must be at least 16 years old to register as an individual. Youth participants ages 13-15 may participate with a parent or guardian. Check individual race pages for any event-specific age requirements."},
-      {"q": "How do I access my registration confirmation?", "a": "Log in to your runner dashboard at /dashboard to view all your registrations and confirmation details. You'll also receive an email confirmation immediately after registering."},
-      {"q": "When will I receive my bib number?", "a": "Bib numbers are typically assigned 1-2 weeks before race day and will be visible in your runner dashboard and emailed to you."},
-      {"q": "What if I have a question not answered here?", "a": "Reach out to us using the contact form at /contact or email hello@mermaidseries.com. We typically respond within 1-2 business days."}
-    ] %}
-
-    <div id="faq-accordion">
-      {% for faq in faqs %}
-      <div style="border-bottom: 1px solid var(--color-gray-200);">
-        <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');"
-          style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; background: none; border: none; cursor: pointer; gap: 1rem; font-family: var(--font-family-base);"
-          aria-expanded="false">
-          <span style="font-size: 1rem; font-weight: 600; color: var(--color-secondary);">{{ faq.q }}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; transition: transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="hidden" style="padding: 0 0 1.25rem; color: var(--color-gray-600); font-size: .9375rem; line-height: 1.75;">
-          <p style="margin:0;">{{ faq.a }}</p>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-
-    <div style="margin-top: 3rem; background: var(--color-primary-light); border-radius: var(--border-radius-lg); padding: 2rem; text-align: center;">
-      <h3 style="font-size: 1.125rem; margin-bottom: .5rem;">Still have questions?</h3>
-      <p style="color: var(--color-gray-600); margin-bottom: 1.25rem;">Our team is here to help. Reach out and we'll get back to you within 1-2 business days.</p>
-      <a href="/contact" class="btn btn-primary">Contact Us</a>
-    </div>
-
-  </div>
-</section>
-
+{% end_dnd_area %}
 </main>
 
 {% include "mermaid-race-portal/templates/partials/footer.html" %}

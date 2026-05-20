@@ -1,3 +1,7 @@
+<!--
+  templateType: "page"
+  isAvailableForNewContent: true
+-->
 <!doctype html>
 <html lang="{{ html_lang }}">
 <head>
@@ -12,153 +16,214 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+{% dnd_area "main_content" label="Page Content" %}
 
-<!-- =============================================
-     HERO
-     ============================================= -->
-<section class="hero hero--image" style="background-image: url('{{ content.featured_image | default("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1600&q=80") }}');">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-eyebrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Women's Running &amp; Triathlon Events
-      </div>
-      {% module "home_hero_heading" path="@hubspot/text" field="text" label="Hero Heading" value="<h1>Find Your Next Race.<br>Cross the Finish Line.</h1>" %}
-      {% module "home_hero_body" path="@hubspot/text" field="text" label="Hero Body" value="<p>Discover sprint triathlons, aquathlons, and running events designed to celebrate and challenge women of all levels.</p>" %}
-      <div class="hero-actions">
-        <a href="/races" class="btn btn-primary btn-lg">Browse Races</a>
-        <a href="/about" class="btn btn-outline-white btn-lg">Learn More</a>
-      </div>
-    </div>
+  {# ── HERO ─────────────────────────────────────────────────────────────── #}
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="mermaid-race-portal/modules/race-hero.module"
+          label="Hero Banner"
+          background_image={
+            "src": "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1600&q=80",
+            "alt": "Mermaid Series race event"
+          }
+          overlay_color={ "color": "#1A2B4A", "opacity": 100 }
+          overlay_opacity=55
+          min_height=620
+          eyebrow_text="Women's Running & Triathlon Events"
+          heading="<h1>Find Your Next Race.<br>Cross the Finish Line.</h1>"
+          subheading="<p>Discover sprint triathlons, aquathlons, and running events designed to celebrate and challenge women of all levels.</p>"
+          cta_primary_text="Browse Races"
+          cta_primary_url="/races"
+          cta_secondary_text="Learn More"
+          cta_secondary_url="/about"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# ── STATS STRIP ──────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#FFFFFF", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Stats Strip"
+          html="<div style='display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding:2rem 0;'>
+  <div style='padding:1.5rem;border-right:1px solid #f3f4f6;'>
+    <div style='font-size:2.25rem;font-weight:700;color:#00A99D;line-height:1;'>50+</div>
+    <div style='font-size:.875rem;color:#6b7280;margin-top:.25rem;'>Races Completed</div>
   </div>
-</section>
-
-<!-- =============================================
-     STATS STRIP
-     ============================================= -->
-<section style="background: var(--color-white); border-bottom: 1px solid var(--color-gray-100);">
-  <div class="container">
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; text-align: center; padding: 2rem 0;">
-      {% for stat in [
-          {"value": "50+", "label": "Races Completed"},
-          {"value": "12,000+", "label": "Finishers"},
-          {"value": "8", "label": "States"},
-          {"value": "15+", "label": "Years Running"}
-      ] %}
-      <div style="padding: 1.5rem; border-right: 1px solid var(--color-gray-100);">
-        <div style="font-size: 2.25rem; font-weight: 700; color: var(--color-primary); line-height: 1;">{{ stat.value }}</div>
-        <div style="font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.25rem;">{{ stat.label }}</div>
-      </div>
-      {% endfor %}
-    </div>
+  <div style='padding:1.5rem;border-right:1px solid #f3f4f6;'>
+    <div style='font-size:2.25rem;font-weight:700;color:#00A99D;line-height:1;'>12,000+</div>
+    <div style='font-size:.875rem;color:#6b7280;margin-top:.25rem;'>Finishers</div>
   </div>
-</section>
-
-<!-- =============================================
-     FEATURED RACES
-     ============================================= -->
-<section class="section">
-  <div class="container">
-    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem;">
-      <div>
-        {% module "featured_races_eyebrow" path="@hubspot/text" field="text" label="Eyebrow" value='<p class="text-primary font-semibold" style="margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;font-size:.875rem;">Upcoming Events</p>' %}
-        {% module "featured_races_heading" path="@hubspot/text" field="text" label="Section Heading" value="<h2 style='margin:0;'>Featured Races</h2>" %}
-      </div>
-      <a href="/races" class="btn btn-outline">View All Races</a>
-    </div>
-
-    {% module "featured_races" path="mermaid-race-portal/modules/featured-races.module" label="Featured Races" %}
+  <div style='padding:1.5rem;border-right:1px solid #f3f4f6;'>
+    <div style='font-size:2.25rem;font-weight:700;color:#00A99D;line-height:1;'>8</div>
+    <div style='font-size:.875rem;color:#6b7280;margin-top:.25rem;'>States</div>
   </div>
-</section>
-
-<!-- =============================================
-     HOW IT WORKS
-     ============================================= -->
-<section class="section section--gray">
-  <div class="container">
-    <div class="text-center" style="margin-bottom: 3rem;">
-      {% module "how_heading" path="@hubspot/text" field="text" label="How It Works Heading" value="<h2>How Registration Works</h2>" %}
-      {% module "how_body" path="@hubspot/text" field="text" label="How It Works Body" value="<p class='text-muted' style='max-width:540px;margin:1rem auto 0;'>Getting to the starting line is easy. Here's how to go from browsing to race day in four simple steps.</p>" %}
-    </div>
-    <div class="grid grid-4">
-      {% for step in [
-          {"num": "01", "title": "Find Your Race", "desc": "Browse our full calendar of events filtered by location, distance, and date. Every race includes full details, pricing, and registration info."},
-          {"num": "02", "title": "Create an Account", "desc": "Sign up for a free runner account to manage all your registrations, update your profile, and access your confirmation details."},
-          {"num": "03", "title": "Register", "desc": "Choose your distance, fill in participant details, accept the waiver, and complete your registration in minutes."},
-          {"num": "04", "title": "Race Day!", "desc": "You'll receive a confirmation email with everything you need. Show up, pin your bib, and run your race!"}
-      ] %}
-      <div style="background: var(--color-white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); text-align: center;">
-        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.25rem; font-weight: 700; color: var(--color-primary);">{{ step.num }}</div>
-        <h3 style="font-size: 1.125rem; margin-bottom: .75rem;">{{ step.title }}</h3>
-        <p style="font-size: .875rem; color: var(--color-gray-500); line-height: 1.75; margin: 0;">{{ step.desc }}</p>
-      </div>
-      {% endfor %}
-    </div>
+  <div style='padding:1.5rem;'>
+    <div style='font-size:2.25rem;font-weight:700;color:#00A99D;line-height:1;'>15+</div>
+    <div style='font-size:.875rem;color:#6b7280;margin-top:.25rem;'>Years Running</div>
   </div>
-</section>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-<!-- =============================================
-     DISTANCE TYPES
-     ============================================= -->
-<section class="section">
-  <div class="container">
-    <div class="text-center" style="margin-bottom: 3rem;">
-      {% module "distances_heading" path="@hubspot/text" field="text" label="Distances Heading" value="<h2>Something for Every Level</h2>" %}
-      {% module "distances_body" path="@hubspot/text" field="text" label="Distances Body" value="<p class='text-muted' style='max-width:540px;margin:1rem auto 0;'>Whether it's your first triathlon or you're chasing a new PR, we have a distance that fits your goals.</p>" %}
-    </div>
-    <div class="grid grid-3">
-      {% for cat in [
-          {"title": "Sprint Triathlon", "desc": "Swim 0.5 mi · Bike 12.4 mi · Run 3.1 mi", "color": "#00A99D"},
-          {"title": "Aquathlon", "desc": "Swim + Run combination events", "color": "#1A2B4A"},
-          {"title": "Running Events", "desc": "5K, 10K, and Half Marathon distances", "color": "#F5A623"}
-      ] %}
-      <div style="background: var(--color-white); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow); border-top: 4px solid {{ cat.color }}; text-align: center;">
-        <h3 style="font-size: 1.25rem; margin-bottom: .75rem; color: {{ cat.color }};">{{ cat.title }}</h3>
-        <p style="font-size: .875rem; color: var(--color-gray-500); margin: 0;">{{ cat.desc }}</p>
-      </div>
-      {% endfor %}
-    </div>
+  {# ── FEATURED RACES ───────────────────────────────────────────────────── #}
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Featured Races Heading"
+          html="<p style='text-transform:uppercase;letter-spacing:.08em;font-size:.875rem;color:#00A99D;font-weight:600;margin-bottom:.5rem;'>Upcoming Events</p><h2 style='margin:0 0 2rem;'>Featured Races</h2>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="mermaid-race-portal/modules/featured-races.module"
+          label="Featured Races Grid"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="View All Link"
+          html="<p style='text-align:center;margin-top:2rem;'><a href='/races' style='display:inline-block;padding:.75rem 1.5rem;border:2px solid #1A2B4A;border-radius:.5rem;font-weight:600;color:#1A2B4A;text-decoration:none;'>View All Races →</a></p>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# ── HOW IT WORKS ─────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#f9fafb", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="How It Works Heading"
+          html="<div style='text-align:center;margin-bottom:3rem;'><h2>How Registration Works</h2><p style='color:#6b7280;max-width:540px;margin:1rem auto 0;'>Getting to the starting line is easy. Here's how to go from browsing to race day in four simple steps.</p></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="How It Works Steps"
+          html="<div style='display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;'>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);text-align:center;'>
+    <div style='width:56px;height:56px;border-radius:50%;background:#e6f7f6;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.25rem;font-weight:700;color:#00A99D;'>01</div>
+    <h3 style='font-size:1.125rem;margin-bottom:.75rem;'>Find Your Race</h3>
+    <p style='font-size:.875rem;color:#6b7280;line-height:1.75;margin:0;'>Browse our full calendar filtered by location, distance, and date.</p>
   </div>
-</section>
-
-<!-- =============================================
-     CTA BANNER
-     ============================================= -->
-<section style="background: linear-gradient(135deg, var(--color-primary) 0%, #2563EB 100%); padding: 5rem 0; color: white;">
-  <div class="container text-center">
-    {% module "cta_heading" path="@hubspot/text" field="text" label="CTA Heading" value="<h2 style='color:white;margin-bottom:1rem;'>Ready to Register?</h2>" %}
-    {% module "cta_body" path="@hubspot/text" field="text" label="CTA Body" value="<p style='color:rgba(255,255,255,.85);font-size:1.125rem;max-width:500px;margin:0 auto 2rem;'>Spots fill up fast. Find your next race and register today.</p>" %}
-    <a href="/races" class="btn btn-outline-white btn-lg">Browse All Races</a>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);text-align:center;'>
+    <div style='width:56px;height:56px;border-radius:50%;background:#e6f7f6;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.25rem;font-weight:700;color:#00A99D;'>02</div>
+    <h3 style='font-size:1.125rem;margin-bottom:.75rem;'>Create an Account</h3>
+    <p style='font-size:.875rem;color:#6b7280;line-height:1.75;margin:0;'>Sign up for a free runner account to manage all your registrations.</p>
   </div>
-</section>
-
-<!-- =============================================
-     TESTIMONIALS
-     ============================================= -->
-<section class="section section--gray">
-  <div class="container">
-    <div class="text-center" style="margin-bottom: 3rem;">
-      {% module "testimonials_heading" path="@hubspot/text" field="text" label="Testimonials Heading" value="<h2>What Runners Say</h2>" %}
-    </div>
-    <div class="grid grid-3">
-      {% for t in [
-          {"quote": "The Mermaid Series gave me the confidence to complete my first triathlon. The support from the community is incredible!", "name": "Sarah M.", "race": "Sprint Triathlon Finisher"},
-          {"quote": "I've done 5 Mermaid races and every one is better than the last. The organization and course support is second to none.", "name": "Jennifer K.", "race": "5-Time Finisher"},
-          {"quote": "From registration to finish line, everything was smooth and professional. Can't wait for next year!", "name": "Maria L.", "race": "Aquathlon Finisher"}
-      ] %}
-      <div style="background: var(--color-white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow);">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="var(--color-primary)" style="margin-bottom:1rem; opacity:.3;"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
-        <p style="font-style: italic; color: var(--color-gray-600); margin-bottom: 1.25rem; line-height: 1.75;">{{ t.quote }}</p>
-        <div>
-          <strong style="color: var(--color-secondary);">{{ t.name }}</strong>
-          <span style="display: block; font-size: .875rem; color: var(--color-primary); margin-top: .125rem;">{{ t.race }}</span>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);text-align:center;'>
+    <div style='width:56px;height:56px;border-radius:50%;background:#e6f7f6;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.25rem;font-weight:700;color:#00A99D;'>03</div>
+    <h3 style='font-size:1.125rem;margin-bottom:.75rem;'>Register</h3>
+    <p style='font-size:.875rem;color:#6b7280;line-height:1.75;margin:0;'>Choose your distance, fill in participant details, and complete registration.</p>
   </div>
-</section>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);text-align:center;'>
+    <div style='width:56px;height:56px;border-radius:50%;background:#e6f7f6;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.25rem;font-weight:700;color:#00A99D;'>04</div>
+    <h3 style='font-size:1.125rem;margin-bottom:.75rem;'>Race Day!</h3>
+    <p style='font-size:.875rem;color:#6b7280;line-height:1.75;margin:0;'>Show up, pin your bib, and run your race!</p>
+  </div>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
+  {# ── DISTANCE TYPES ───────────────────────────────────────────────────── #}
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Distance Types"
+          html="<div style='text-align:center;margin-bottom:3rem;'><h2>Something for Every Level</h2><p style='color:#6b7280;max-width:540px;margin:1rem auto 0;'>Whether it's your first triathlon or you're chasing a new PR, we have a distance that fits your goals.</p></div>
+<div style='display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;'>
+  <div style='background:#fff;border-radius:.75rem;padding:2.5rem;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:4px solid #00A99D;text-align:center;'>
+    <h3 style='font-size:1.25rem;margin-bottom:.75rem;color:#00A99D;'>Sprint Triathlon</h3>
+    <p style='font-size:.875rem;color:#6b7280;margin:0;'>Swim 0.5 mi · Bike 12.4 mi · Run 3.1 mi</p>
+  </div>
+  <div style='background:#fff;border-radius:.75rem;padding:2.5rem;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:4px solid #1A2B4A;text-align:center;'>
+    <h3 style='font-size:1.25rem;margin-bottom:.75rem;color:#1A2B4A;'>Aquathlon</h3>
+    <p style='font-size:.875rem;color:#6b7280;margin:0;'>Swim + Run combination events</p>
+  </div>
+  <div style='background:#fff;border-radius:.75rem;padding:2.5rem;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:4px solid #F5A623;text-align:center;'>
+    <h3 style='font-size:1.25rem;margin-bottom:.75rem;color:#F5A623;'>Running Events</h3>
+    <p style='font-size:.875rem;color:#6b7280;margin:0;'>5K, 10K, and Half Marathon distances</p>
+  </div>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# ── CTA BANNER ───────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#00A99D", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="CTA Banner"
+          html="<div style='text-align:center;padding:3rem 0;color:white;'>
+  <h2 style='color:white;margin-bottom:1rem;font-size:2.25rem;'>Ready to Register?</h2>
+  <p style='color:rgba(255,255,255,.85);font-size:1.125rem;max-width:500px;margin:0 auto 2rem;'>Spots fill up fast. Find your next race and register today.</p>
+  <a href='/races' style='display:inline-block;padding:.875rem 2rem;border:2px solid white;border-radius:.5rem;color:white;font-weight:700;text-decoration:none;font-size:1rem;'>Browse All Races</a>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# ── TESTIMONIALS ─────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#f9fafb", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Testimonials"
+          html="<div style='text-align:center;margin-bottom:3rem;'><h2>What Runners Say</h2></div>
+<div style='display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;'>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);'>
+    <p style='font-style:italic;color:#4b5563;margin-bottom:1.25rem;line-height:1.75;'>&ldquo;The Mermaid Series gave me the confidence to complete my first triathlon. The support from the community is incredible!&rdquo;</p>
+    <strong style='color:#1A2B4A;'>Sarah M.</strong>
+    <span style='display:block;font-size:.875rem;color:#00A99D;margin-top:.125rem;'>Sprint Triathlon Finisher</span>
+  </div>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);'>
+    <p style='font-style:italic;color:#4b5563;margin-bottom:1.25rem;line-height:1.75;'>&ldquo;I&rsquo;ve done 5 Mermaid races and every one is better than the last. The organization and course support is second to none.&rdquo;</p>
+    <strong style='color:#1A2B4A;'>Jennifer K.</strong>
+    <span style='display:block;font-size:.875rem;color:#00A99D;margin-top:.125rem;'>5-Time Finisher</span>
+  </div>
+  <div style='background:#fff;border-radius:.75rem;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,.1);'>
+    <p style='font-style:italic;color:#4b5563;margin-bottom:1.25rem;line-height:1.75;'>&ldquo;From registration to finish line, everything was smooth and professional. Can&rsquo;t wait for next year!&rdquo;</p>
+    <strong style='color:#1A2B4A;'>Maria L.</strong>
+    <span style='display:block;font-size:.875rem;color:#00A99D;margin-top:.125rem;'>Aquathlon Finisher</span>
+  </div>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+{% end_dnd_area %}
 </main>
 
 {% include "mermaid-race-portal/templates/partials/footer.html" %}

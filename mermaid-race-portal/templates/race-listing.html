@@ -1,3 +1,7 @@
+<!--
+  templateType: "page"
+  isAvailableForNewContent: true
+-->
 <!doctype html>
 <html lang="{{ html_lang }}">
 <head>
@@ -12,59 +16,61 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+{% dnd_area "main_content" label="Page Content" %}
 
-<div class="page-header">
-  <div class="container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">Home</a>
-      <span class="breadcrumb-sep" aria-hidden="true">/</span>
-      <span>Find a Race</span>
-    </nav>
-    {% module "listing_heading" path="@hubspot/text" field="text" label="Page Heading" value="<h1>Find a Race</h1>" %}
-    {% module "listing_body" path="@hubspot/text" field="text" label="Page Description" value="<p>Browse all upcoming Mermaid Series events. Filter by location, distance, and date to find the perfect race for you.</p>" %}
+  {# ── PAGE HEADER ─────────────────────────────────────────────────────── #}
+  {% dnd_section
+    background_color={ "color": "#1A2B4A", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Page Header"
+          html="<div style='padding:3rem 0;'><nav style='font-size:.875rem;margin-bottom:1rem;'><a href='/' style='color:rgba(255,255,255,.7);'>Home</a> <span style='color:rgba(255,255,255,.4);margin:0 .5rem;'>/</span> <span style='color:white;'>Find a Race</span></nav><h1 style='color:white;margin-bottom:.5rem;'>Find a Race</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Browse all upcoming Mermaid Series events. Filter by location, distance, and date to find the perfect race for you.</p></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# ── SEARCH + RACE GRID ───────────────────────────────────────────────── #}
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {# Search bar — static HTML, JS-driven filtering #}
+        {% dnd_module path="@hubspot/raw_html"
+          label="Search Bar"
+          html="<div style='padding:1.5rem 0 0;'>
+  <div class='search-bar' style='margin-bottom:1.5rem;'>
+    <input type='text' class='form-control' id='race-search' placeholder='Search by race name or location…' aria-label='Search races'>
+    <select class='form-control' id='filter-type' style='max-width:200px;'>
+      <option value=''>All Types</option>
+      <option value='triathlon'>Triathlon</option>
+      <option value='aquathlon'>Aquathlon</option>
+      <option value='running'>Running</option>
+    </select>
+    <button class='btn btn-primary' id='search-btn'>Search</button>
   </div>
-</div>
-
-<section class="section--sm">
-  <div class="container">
-
-    <!-- Search & Filter Bar -->
-    <div class="search-bar" style="margin-bottom: 1.5rem;">
-      <input type="text" class="form-control" id="race-search" placeholder="Search by race name or location…" aria-label="Search races">
-      <select class="form-control" id="filter-type" aria-label="Filter by type" style="max-width: 200px;">
-        <option value="">All Types</option>
-        <option value="triathlon">Triathlon</option>
-        <option value="aquathlon">Aquathlon</option>
-        <option value="running">Running</option>
-      </select>
-      <select class="form-control" id="filter-state" aria-label="Filter by state" style="max-width: 180px;">
-        <option value="">All States</option>
-        <option value="ca">California</option>
-        <option value="ny">New York</option>
-        <option value="tx">Texas</option>
-        <option value="fl">Florida</option>
-        <option value="il">Illinois</option>
-      </select>
-      <button class="btn btn-primary" id="search-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Search
-      </button>
-    </div>
-
-    <!-- Filter Pills -->
-    <div class="filter-bar" id="status-filters" role="group" aria-label="Filter by status">
-      <button class="filter-btn active" data-filter="all">All Races</button>
-      <button class="filter-btn" data-filter="open">Open Registration</button>
-      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
-      <button class="filter-btn" data-filter="completed">Past Races</button>
-    </div>
-
-    <!-- Race Grid (populated by HubDB query module) -->
-    {% module "race_listing_grid" path="mermaid-race-portal/modules/race-search.module" label="Race Listing Grid" %}
-
+  <div class='filter-bar' id='status-filters' role='group' aria-label='Filter by status'>
+    <button class='filter-btn active' data-filter='all'>All Races</button>
+    <button class='filter-btn' data-filter='open'>Open Registration</button>
+    <button class='filter-btn' data-filter='upcoming'>Upcoming</button>
+    <button class='filter-btn' data-filter='completed'>Past Races</button>
   </div>
-</section>
+</div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="mermaid-race-portal/modules/race-search.module"
+          label="Race Listing Grid"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
+{% end_dnd_area %}
 </main>
 
 {% include "mermaid-race-portal/templates/partials/footer.html" %}

@@ -1,0 +1,91 @@
+[
+  {
+    "id": "background_image",
+    "name": "background_image",
+    "label": "Background Image",
+    "type": "image",
+    "required": false,
+    "locked": false,
+    "default": {
+      "src": "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1600&q=80",
+      "alt": "Mermaid Series race event"
+    }
+  },
+  {
+    "id": "overlay_color",
+    "name": "overlay_color",
+    "label": "Overlay Color",
+    "type": "color",
+    "default": {
+      "color": "#1A2B4A",
+      "opacity": 100
+    }
+  },
+  {
+    "id": "overlay_opacity",
+    "name": "overlay_opacity",
+    "label": "Overlay Opacity (0–100)",
+    "type": "number",
+    "min": 0,
+    "max": 100,
+    "default": 55
+  },
+  {
+    "id": "min_height",
+    "name": "min_height",
+    "label": "Minimum Height (px)",
+    "type": "number",
+    "min": 300,
+    "max": 1000,
+    "default": 620
+  },
+  {
+    "id": "eyebrow_text",
+    "name": "eyebrow_text",
+    "label": "Eyebrow Text",
+    "type": "text",
+    "default": "Women's Running & Triathlon Events"
+  },
+  {
+    "id": "heading",
+    "name": "heading",
+    "label": "Heading",
+    "type": "richtext",
+    "default": "<h1>Find Your Next Race.<br>Cross the Finish Line.</h1>"
+  },
+  {
+    "id": "subheading",
+    "name": "subheading",
+    "label": "Subheading",
+    "type": "richtext",
+    "default": "<p>Discover sprint triathlons, aquathlons, and running events designed to celebrate and challenge women of all levels.</p>"
+  },
+  {
+    "id": "cta_primary_text",
+    "name": "cta_primary_text",
+    "label": "Primary Button Label",
+    "type": "text",
+    "default": "Browse Races"
+  },
+  {
+    "id": "cta_primary_url",
+    "name": "cta_primary_url",
+    "label": "Primary Button URL",
+    "type": "text",
+    "default": "/races"
+  },
+  {
+    "id": "cta_secondary_text",
+    "name": "cta_secondary_text",
+    "label": "Secondary Button Label",
+    "type": "text",
+    "default": "Learn More"
+  },
+  {
+    "id": "cta_secondary_url",
+    "name": "cta_secondary_url",
+    "label": "Secondary Button URL",
+    "type": "text",
+    "default": "/about"
+  }
+]

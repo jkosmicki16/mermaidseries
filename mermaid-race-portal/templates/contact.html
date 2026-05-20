@@ -1,3 +1,7 @@
+<!--
+  templateType: "page"
+  isAvailableForNewContent: true
+-->
 <!doctype html>
 <html lang="{{ html_lang }}">
 <head>
@@ -12,64 +16,44 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+{% dnd_area "main_content" label="Page Content" %}
 
-<div class="page-header">
-  <div class="container">
-    {% module "contact_heading" path="@hubspot/text" field="text" label="Page Heading" value="<h1>Contact Us</h1>" %}
-    {% module "contact_sub" path="@hubspot/text" field="text" label="Sub-heading" value="<p>Have a question about a race or your registration? We're here to help.</p>" %}
-  </div>
-</div>
+  {% dnd_section
+    background_color={ "color": "#1A2B4A", "opacity": 100 }
+  %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Page Header"
+          html="<div style='padding:3rem 0;color:white;'><h1 style='color:white;margin-bottom:.5rem;'>Contact Us</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Have a question about a race or your registration? We're here to help.</p></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-<section class="section">
-  <div class="container">
-    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 5rem; align-items: start;">
+  {% dnd_section %}
+    {% dnd_column width=12 offset=0 %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/rich_text"
+          label="Contact Info"
+          html="<div style='display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start;'><div><h2 style='font-size:1.5rem;margin-bottom:1.5rem;'>Get In Touch</h2><p style='color:#4b5563;margin-bottom:2.5rem;line-height:1.75;'>We typically respond within 1–2 business days. For urgent race-day questions, please include your confirmation number.</p><div style='display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.5rem;'><div style='width:44px;height:44px;border-radius:.5rem;background:#e6f7f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#00A99D' stroke-width='2'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'/><polyline points='22,6 12,13 2,6'/></svg></div><div><div style='font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:#9ca3af;margin-bottom:.125rem;'>Email</div><a href='mailto:hello@mermaidseries.com' style='font-weight:500;color:#1A2B4A;'>hello@mermaidseries.com</a></div></div><div style='display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.5rem;'><div style='width:44px;height:44px;border-radius:.5rem;background:#e6f7f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#00A99D' stroke-width='2'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg></div><div><div style='font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:#9ca3af;margin-bottom:.125rem;'>Support Hours</div><span style='font-weight:500;color:#1A2B4A;'>Mon–Fri, 9am–5pm ET</span></div></div><div style='display:flex;gap:1rem;align-items:flex-start;'><div style='width:44px;height:44px;border-radius:.5rem;background:#e6f7f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;'><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#00A99D' stroke-width='2'><circle cx='12' cy='12' r='10'/><path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg></div><div><div style='font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:#9ca3af;margin-bottom:.125rem;'>FAQ</div><a href='/faq' style='font-weight:500;color:#1A2B4A;'>Browse common questions</a></div></div></div><div></div></div>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module path="@hubspot/form"
+          label="Contact Form"
+          form_id=""
+          response_type="inline"
+          message="<p>Thanks for reaching out! We'll get back to you within 1-2 business days.</p>"
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
 
-      <!-- Contact Info -->
-      <div>
-        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Get In Touch</h2>
-        <p style="color: var(--color-gray-600); margin-bottom: 2.5rem; line-height: 1.75;">We typically respond within 1–2 business days. For urgent race-day questions, please include your confirmation number.</p>
-
-        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
-          <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div>
-            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">Email</div>
-            <a href="mailto:hello@mermaidseries.com" style="font-weight: 500; color: var(--color-secondary);">hello@mermaidseries.com</a>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
-          <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div>
-            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">Support Hours</div>
-            <span style="font-weight: 500; color: var(--color-secondary);">Mon–Fri, 9am–5pm ET</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem;">
-          <div style="width: 44px; height: 44px; border-radius: var(--border-radius); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <div>
-            <div style="font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; color: var(--color-gray-400); margin-bottom: .125rem;">FAQ</div>
-            <a href="/faq" style="font-weight: 500; color: var(--color-secondary);">Browse common questions</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact Form -->
-      <div style="background: var(--color-white); border-radius: var(--border-radius-xl); box-shadow: var(--shadow-lg); padding: 2.5rem; border: 1px solid var(--color-gray-100);">
-        <h2 style="font-size: 1.25rem; margin-bottom: 1.5rem;">Send a Message</h2>
-        {% module "contact_form" path="@hubspot/form" label="Contact Form" form_id="" %}
-      </div>
-
-    </div>
-  </div>
-</section>
-
+{% end_dnd_area %}
 </main>
 
 {% include "mermaid-race-portal/templates/partials/footer.html" %}

@@ -1,0 +1,22 @@
+<div id="faq-accordion" style="max-width: 800px; margin: 0 auto;">
+  {% for faq in module.faqs %}
+  <div style="border-bottom: 1px solid var(--color-gray-200, #e5e7eb);">
+    <button
+      onclick="var p=this.nextElementSibling; p.style.display=p.style.display==='block'?'none':'block'; this.querySelector('svg').style.transform=p.style.display==='block'?'rotate(180deg)':'rotate(0deg)'; this.setAttribute('aria-expanded', p.style.display==='block'?'true':'false');"
+      style="width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0;background:none;border:none;cursor:pointer;gap:1rem;font-family:inherit;"
+      aria-expanded="false">
+      <span style="font-size:1rem;font-weight:600;color:var(--color-secondary,#1A2B4A);">{{ faq.question }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary,#00A99D)" stroke-width="2" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div style="display:none;padding:0 0 1.25rem;color:var(--color-gray-600,#4b5563);font-size:.9375rem;line-height:1.75;">
+      {{ faq.answer }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div style="margin-top:3rem;background:var(--color-primary-light,#e6f7f6);border-radius:.75rem;padding:2rem;text-align:center;max-width:800px;margin-left:auto;margin-right:auto;">
+  <h3 style="font-size:1.125rem;margin-bottom:.5rem;">Still have questions?</h3>
+  <p style="color:var(--color-gray-600,#4b5563);margin-bottom:1.25rem;">Our team is here to help. Reach out and we'll get back to you within 1–2 business days.</p>
+  <a href="/contact" class="btn btn-primary">Contact Us</a>
+</div>
