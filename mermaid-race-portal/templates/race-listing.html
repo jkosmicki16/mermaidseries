@@ -16,28 +16,23 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+  <div style="background:#1A2B4A;padding:0 2rem;">
+    <div style="max-width:1200px;margin:0 auto;padding:3rem 0;color:white;">
+      <nav style="font-size:.875rem;margin-bottom:1rem;">
+        <a href="/" style="color:rgba(255,255,255,.7);">Home</a>
+        <span style="color:rgba(255,255,255,.4);margin:0 .5rem;">/</span>
+        <span style="color:white;">Find a Race</span>
+      </nav>
+      <h1 style="color:white;margin-bottom:.5rem;">Find a Race</h1>
+      <p style="color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;">Browse all upcoming Mermaid Series events. Filter by location, distance, and date to find the perfect race for you.</p>
+    </div>
+  </div>
+
 {% dnd_area "main_content" label="Page Content" %}
 
-  {# ── PAGE HEADER ─────────────────────────────────────────────────────── #}
-  {% dnd_section
-    background_color={ "color": "#1A2B4A", "opacity": 100 }
-  %}
-    {% dnd_column width=12 offset=0 %}
-      {% dnd_row %}
-        {% dnd_module path="@hubspot/rich_text"
-          label="Page Header"
-          html="<div style='padding:3rem 0;'><nav style='font-size:.875rem;margin-bottom:1rem;'><a href='/' style='color:rgba(255,255,255,.7);'>Home</a> <span style='color:rgba(255,255,255,.4);margin:0 .5rem;'>/</span> <span style='color:white;'>Find a Race</span></nav><h1 style='color:white;margin-bottom:.5rem;'>Find a Race</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Browse all upcoming Mermaid Series events. Filter by location, distance, and date to find the perfect race for you.</p></div>"
-        %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-    {% end_dnd_column %}
-  {% end_dnd_section %}
-
-  {# ── SEARCH + RACE GRID ───────────────────────────────────────────────── #}
   {% dnd_section %}
     {% dnd_column width=12 offset=0 %}
       {% dnd_row %}
-        {# Search bar — static HTML, JS-driven filtering #}
         {% dnd_module path="@hubspot/raw_html"
           label="Search Bar"
           html="<div style='padding:1.5rem 0 0;'>

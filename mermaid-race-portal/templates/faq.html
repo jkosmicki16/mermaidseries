@@ -16,24 +16,15 @@
 {% include "mermaid-race-portal/templates/partials/header.html" %}
 
 <main>
+  <div style="background:#1A2B4A;padding:0 2rem;">
+    <div style="max-width:1200px;margin:0 auto;padding:3rem 0;color:white;">
+      <h1 style="color:white;margin-bottom:.5rem;">Frequently Asked Questions</h1>
+      <p style="color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;">Everything you need to know about registering and racing with Mermaid Series.</p>
+    </div>
+  </div>
+
 {% dnd_area "main_content" label="Page Content" %}
 
-  {# ── PAGE HEADER ─────────────────────────────────────────────────────── #}
-  {% dnd_section
-    background_color={ "color": "#1A2B4A", "opacity": 100 }
-  %}
-    {% dnd_column width=12 offset=0 %}
-      {% dnd_row %}
-        {% dnd_module path="@hubspot/rich_text"
-          label="Page Header"
-          html="<div style='padding:3rem 0;color:white;'><h1 style='color:white;margin-bottom:.5rem;'>Frequently Asked Questions</h1><p style='color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;'>Everything you need to know about registering and racing with Mermaid Series.</p></div>"
-        %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-    {% end_dnd_column %}
-  {% end_dnd_section %}
-
-  {# ── FAQ ACCORDION ────────────────────────────────────────────────────── #}
   {% dnd_section %}
     {% dnd_column width=12 offset=0 %}
       {% dnd_row %}
