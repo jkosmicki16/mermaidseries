@@ -1,10 +1,10 @@
 {% set race_id = request.query_dict.race | default("") %}
 {% set preselected_race = "" %}
 {% if race_id %}
-  {% set preselected_race = hubdb_table_rows("races", "hs_id__eq=" ~ race_id ~ "&limit=1")[0] %}
+  {% set preselected_race = hubdb_table_rows("races", "hs_id=" ~ race_id ~ "&limit=1")[0] %}
 {% endif %}
 
-{% set all_races = hubdb_table_rows("races", "status__eq=open&orderBy=date") %}
+{% set all_races = hubdb_table_rows("races", "status=open&orderBy=date") %}
 
 <div id="registration-wrapper" style="max-width:820px;margin:0 auto;">
 
