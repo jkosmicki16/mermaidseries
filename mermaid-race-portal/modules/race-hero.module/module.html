@@ -1,63 +1,35 @@
-{% set bg = module.background_image.src | default("") %}
+{% set bg_src = module.background_image.src | default("") %}
 {% set overlay_hex = module.overlay_color.color | default("#1A2B4A") %}
-{% set opacity = module.overlay_opacity | default(55) %}
-{% set opacity_decimal = opacity / 100 %}
+{% set raw_opacity = module.overlay_opacity | default(55) %}
+{% set opacity_decimal = raw_opacity / 100.0 %}
 {% set min_h = module.min_height | default(620) %}
 
-<section class="hero hero--image" style="
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: {{ min_h }}px;
-  overflow: hidden;
-  {% if bg %}
-    background-image: url('{{ bg }}');
-    background-size: cover;
-    background-position: center center;
-  {% else %}
-    background: linear-gradient(135deg, var(--color-secondary) 0%, #2563EB 100%);
-  {% endif %}
-">
-  <!-- Editable overlay: color and opacity controlled by module fields -->
-  <div style="
-    position: absolute;
-    inset: 0;
-    background-color: {{ overlay_hex }};
-    opacity: {{ opacity_decimal }};
-    z-index: 1;
-  "></div>
+{% if bg_src %}
+  {% set section_bg = "background-image:url('" + bg_src + "');background-size:cover;background-position:center;" %}
+{% else %}
+  {% set section_bg = "background:linear-gradient(135deg,#1A2B4A 0%,#2563EB 100%);" %}
+{% endif %}
 
-  <div class="container" style="position: relative; z-index: 2;">
-    <div class="hero-content">
-
-      {% if module.eyebrow_text %}
-      <div class="hero-eyebrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        {{ module.eyebrow_text }}
-      </div>
-      {% endif %}
-
-      <div class="hero-heading">
-        {{ module.heading }}
-      </div>
-
-      <div class="hero-body">
-        {{ module.subheading }}
-      </div>
-
-      <div class="hero-actions">
+<section style="position:relative;display:flex;align-items:center;min-height:{{ min_h }}px;overflow:hidden;color:#fff;{{ section_bg }}">
+  <div style="position:absolute;inset:0;background-color:{{ overlay_hex }};opacity:{{ opacity_decimal }};z-index:1;pointer-events:none;"></div>
+  <div style="position:relative;z-index:2;width:100%;max-width:1200px;margin:0 auto;padding:4rem 2rem;">
+    {% if module.eyebrow_text %}
+    <div style="display:inline-flex;align-items:center;gap:.5rem;padding:.375rem .875rem;background:rgba(255,255,255,.15);border-radius:999px;font-size:.875rem;font-weight:600;color:#fff;margin-bottom:1.5rem;letter-spacing:.02em;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      {{ module.eyebrow_text }}
+    </div>
+    {% endif %}
+    <div style="max-width:720px;">
+      <div style="color:#fff;margin-bottom:1.5rem;">{{ module.heading }}</div>
+      <div style="color:rgba(255,255,255,.85);font-size:1.125rem;margin-bottom:2.5rem;line-height:1.75;">{{ module.subheading }}</div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
         {% if module.cta_primary_text %}
-          <a href="{{ module.cta_primary_url | default('/races') }}" class="btn btn-primary btn-lg">
-            {{ module.cta_primary_text }}
-          </a>
+        <a href="{{ module.cta_primary_url | default('/races') }}" style="display:inline-block;padding:.875rem 2rem;background:#00A99D;color:#fff;font-weight:700;border-radius:.5rem;text-decoration:none;font-size:1rem;">{{ module.cta_primary_text }}</a>
         {% endif %}
         {% if module.cta_secondary_text %}
-          <a href="{{ module.cta_secondary_url | default('/about') }}" class="btn btn-outline-white btn-lg">
-            {{ module.cta_secondary_text }}
-          </a>
+        <a href="{{ module.cta_secondary_url | default('/about') }}" style="display:inline-block;padding:.875rem 2rem;border:2px solid rgba(255,255,255,.7);color:#fff;font-weight:700;border-radius:.5rem;text-decoration:none;font-size:1rem;">{{ module.cta_secondary_text }}</a>
         {% endif %}
       </div>
-
     </div>
   </div>
 </section>
