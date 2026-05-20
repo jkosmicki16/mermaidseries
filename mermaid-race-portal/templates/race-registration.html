@@ -30,51 +30,47 @@
     </div>
   </div>
 
-{% dnd_area "main_content" label="Page Content" %}
+  <div style="padding:2.5rem 2rem;">
+    <div style="max-width:820px;margin:0 auto;">
 
-  {% dnd_section %}
-    {% dnd_column width=12 offset=0 %}
-      {% dnd_row %}
-        {% dnd_module path="@hubspot/rich_text"
-          label="Registration Steps"
-          html="<div style='max-width:820px;margin:0 auto 2rem;'><div style='display:flex;align-items:center;gap:0;margin-bottom:2.5rem;'>
-  <div style='display:flex;flex-direction:column;align-items:center;flex:1;'>
-    <div style='width:40px;height:40px;border-radius:50%;background:#00A99D;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;'>1</div>
-    <div style='font-size:.75rem;color:#6b7280;margin-top:.375rem;text-align:center;'>Select Race</div>
-  </div>
-  <div style='flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;'></div>
-  <div style='display:flex;flex-direction:column;align-items:center;flex:1;'>
-    <div style='width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;'>2</div>
-    <div style='font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;'>Participant Info</div>
-  </div>
-  <div style='flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;'></div>
-  <div style='display:flex;flex-direction:column;align-items:center;flex:1;'>
-    <div style='width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;'>3</div>
-    <div style='font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;'>Emergency Contact</div>
-  </div>
-  <div style='flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;'></div>
-  <div style='display:flex;flex-direction:column;align-items:center;flex:1;'>
-    <div style='width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;'>4</div>
-    <div style='font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;'>Waiver &amp; Review</div>
-  </div>
-  <div style='flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;'></div>
-  <div style='display:flex;flex-direction:column;align-items:center;flex:1;'>
-    <div style='width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;'>5</div>
-    <div style='font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;'>Payment</div>
-  </div>
-</div></div>"
-        %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-      {% dnd_row %}
-        {% dnd_module path="mermaid-race-portal/modules/race-registration-form.module"
-          label="Race Registration Form"
-        %}
-        {% end_dnd_module %}
-      {% end_dnd_row %}
-    {% end_dnd_column %}
-  {% end_dnd_section %}
+      <!-- Progress steps -->
+      <div style="display:flex;align-items:center;margin-bottom:3rem;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#00A99D;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;">1</div>
+          <div style="font-size:.75rem;color:#374151;margin-top:.375rem;text-align:center;">Select Race</div>
+        </div>
+        <div style="flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;">2</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;">Participant Info</div>
+        </div>
+        <div style="flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;">3</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;">Emergency Contact</div>
+        </div>
+        <div style="flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;">4</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;">Waiver &amp; Review</div>
+        </div>
+        <div style="flex:1;height:2px;background:#e5e7eb;margin-bottom:1.25rem;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#e5e7eb;color:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;">5</div>
+          <div style="font-size:.75rem;color:#9ca3af;margin-top:.375rem;text-align:center;">Payment</div>
+        </div>
+      </div>
 
+      <!-- Registration form module -->
+      {% module "registration_form"
+        path="mermaid-race-portal/modules/race-registration-form.module"
+        label="Race Registration Form"
+      %}
+
+    </div>
+  </div>
+
+{% dnd_area "extra_content" label="Additional Content (optional)" %}
 {% end_dnd_area %}
 </main>
 

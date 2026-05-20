@@ -1,7 +1,7 @@
 {% set race_id = request.query_dict.race | default("") %}
 {% set race = "" %}
 {% if race_id %}
-  {% set race = hubdb_table_rows("races", "hs_id=" ~ race_id ~ "&limit=1")[0] %}
+  {% set race = hubdb_table_rows("races", "hs_id__eq=" ~ race_id ~ "&limit=1")[0] %}
 {% endif %}
 
 <div id="registration-wrapper">
@@ -36,7 +36,7 @@
 
     <div class="form-group">
       <label class="form-label" for="race-select">Race <span class="required">*</span></label>
-      {% set all_races = hubdb_table_rows("races", "status=open&orderBy=date") %}
+      {% set all_races = hubdb_table_rows("races", "status__eq=open&orderBy=date") %}
       <select class="form-control" id="race-select" name="race_id" required onchange="updateDistances(this.value)">
         <option value="">Select a race…</option>
         {% for r in all_races %}
