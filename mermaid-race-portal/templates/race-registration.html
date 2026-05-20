@@ -63,7 +63,11 @@
         <div id="ms-order-summary" style="display:none;background:#f9fafb;border-radius:.5rem;padding:1.25rem;margin-top:1rem;">
           <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.9375rem;">
             <span style="color:#6b7280;">Registration Fee</span>
-            <span id="ms-summary-price" style="font-weight:600;color:#1A2B4A;"></span>
+            <span id="ms-summary-base" style="font-weight:600;color:#1A2B4A;"></span>
+          </div>
+          <div id="ms-summary-shirt-row" style="display:none;justify-content:space-between;margin-bottom:.5rem;font-size:.9375rem;">
+            <span style="color:#6b7280;">Shirt / Tank</span>
+            <span style="font-weight:600;color:#1A2B4A;">+$16.00</span>
           </div>
           <div style="border-top:1px solid #e5e7eb;padding-top:.75rem;display:flex;justify-content:space-between;font-weight:700;">
             <span>Total</span>
@@ -93,53 +97,87 @@
 <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
 <script>
 (function() {
+  var SHIRT_COST = 16;
+  var NO_SHIRT_VALUE = 'udTmHg-rGL_4JplhylJFB';
+
   var races = {};
   {% for r in all_races %}
   races["{{ r.hs_id }}"] = {
-    price: "{{ r.price | default('') }}",
-    paymentUrl: "{{ r.payment_link_url | default('') }}"
+    price: parseFloat("{{ r.price | default('0') }}") || 0,
+    paymentUrl: "{{ r.payment_link_url | default('') }}",
+    paymentUrlShirt: "{{ r.payment_link_url_shirt | default('') }}"
   };
   {% endfor %}
 
+  var currentRaceId = '';
+  var shirtSelected = false;
+
+  function msRecalculate() {
+    if (!currentRaceId) return;
+    var race = races[currentRaceId];
+    if (!race) return;
+
+    var summary = document.getElementById('ms-order-summary');
+    var baseEl = document.getElementById('ms-summary-base');
+    var shirtRow = document.getElementById('ms-summary-shirt-row');
+    var totalEl = document.getElementById('ms-summary-total');
+
+    var total = race.price;
+    baseEl.textContent = '$' + race.price.toFixed(2);
+
+    if (shirtSelected) {
+      total += SHIRT_COST;
+      shirtRow.style.display = '';
+    } else {
+      shirtRow.style.display = 'none';
+    }
+
+    totalEl.textContent = '$' + total.toFixed(2);
+    summary.style.display = '';
+
+    // Pick correct payment link
+    if (shirtSelected && race.paymentUrlShirt) {
+      pendingPaymentUrl = race.paymentUrlShirt;
+    } else {
+      pendingPaymentUrl = race.paymentUrl || '/registration-confirmation';
+    }
+  }
+
   var pendingPaymentUrl = '';
 
-  // Create the HubSpot form embed
   hbspt.forms.create({
     region: "na2",
     portalId: "244551932",
     formId: "5757b823-4188-4d5d-8b0d-02e520107210",
     target: "#hs-registration-form",
-    onFormSubmitted: function() {
-      if (pendingPaymentUrl) {
-        window.location.href = pendingPaymentUrl;
-      } else {
-        window.location.href = "/registration-confirmation";
+    onFormReady: function() {
+      // Listen for shirt radio changes
+      var container = document.getElementById('hs-registration-form');
+      if (container) {
+        container.addEventListener('change', function(e) {
+          if (e.target.name === 'do_you_want_product') {
+            shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
+            msRecalculate();
+          }
+        });
       }
+    },
+    onFormSubmitted: function() {
+      window.location.href = pendingPaymentUrl || '/registration-confirmation';
     }
   });
 
   window.msUpdateRace = function(raceId) {
-    var race = races[raceId];
+    currentRaceId = raceId;
     var summary = document.getElementById('ms-order-summary');
-    var priceEl = document.getElementById('ms-summary-price');
-    var totalEl = document.getElementById('ms-summary-total');
-
-    if (!race || !raceId) {
+    if (!raceId || !races[raceId]) {
       summary.style.display = 'none';
       pendingPaymentUrl = '';
       return;
     }
-
-    if (race.price) {
-      priceEl.textContent = '$' + race.price;
-      totalEl.textContent = '$' + race.price;
-      summary.style.display = '';
-    }
-
-    pendingPaymentUrl = race.paymentUrl || '/registration-confirmation';
+    msRecalculate();
   };
 
-  // Init if race pre-selected via query param
   document.addEventListener('DOMContentLoaded', function() {
     var sel = document.getElementById('race-select');
     if (sel && sel.value) msUpdateRace(sel.value);
