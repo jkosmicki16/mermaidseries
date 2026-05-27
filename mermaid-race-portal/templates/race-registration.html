@@ -256,22 +256,42 @@
         }
       });
 
-      // MutationObserver: fires when HubSpot replaces the <form> with its success message
+      // Click on submit button → capture data, then poll until HubSpot shows success
+      container.addEventListener('click', function(e) {
+        var btn = e.target.closest
+          ? e.target.closest('input[type="submit"],button[type="submit"]')
+          : (e.target.type === 'submit' ? e.target : null);
+        if (!btn) return;
+        msCaptureShirtFromForm();
+        var attempts = 0;
+        var poll = setInterval(function() {
+          attempts++;
+          var done = container.querySelector('.submitted-message') ||
+                     container.querySelector('[class*="submitted"]') ||
+                     !container.querySelector('form');
+          if (done) { clearInterval(poll); msShowCheckout(); }
+          else if (attempts > 30) { clearInterval(poll); }
+        }, 333);
+      });
+
+      // MutationObserver with subtree catches nested DOM replacements
       if (window.MutationObserver) {
         var observer = new MutationObserver(function() {
-          if (!container.querySelector('form')) {
+          var done = container.querySelector('.submitted-message') ||
+                     container.querySelector('[class*="submitted"]') ||
+                     !container.querySelector('form');
+          if (done) {
             observer.disconnect();
             msCaptureShirtFromForm();
             msShowCheckout();
           }
         });
-        observer.observe(container, { childList: true });
+        observer.observe(container, { childList: true, subtree: true });
       }
     },
-    // Belt-and-suspenders: keep both callbacks as fallback
     onFormSubmit: function() {
       msCaptureShirtFromForm();
-      setTimeout(function() { msShowCheckout(); }, 400);
+      setTimeout(function() { msShowCheckout(); }, 600);
     },
     onFormSubmitted: function() {
       msCaptureShirtFromForm();
