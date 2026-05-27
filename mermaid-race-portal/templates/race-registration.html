@@ -82,24 +82,11 @@
         <div id="hs-registration-form"></div>
       </div>
 
-      <!-- Payment note -->
-      <p id="ms-payment-note" style="text-align:center;font-size:.8125rem;color:#9ca3af;margin-bottom:2rem;">
-        🔒 After submitting your details you'll complete secure payment below · Powered by HubSpot Payments
-      </p>
-
-      <!-- Checkout summary + payment (shown after form submit) -->
+      <!-- Order review (shown when user clicks "Review My Order") -->
       <div id="ms-checkout" style="display:none;">
         <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
-          <div style="display:flex;align-items:center;gap:.875rem;margin-bottom:1.75rem;">
-            <div style="width:2.75rem;height:2.75rem;border-radius:50%;background:#d1faf7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00A99D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div>
-              <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin:0 0 .125rem;">Registration Received!</h2>
-              <p style="font-size:.875rem;color:#6b7280;margin:0;">Complete your payment below to secure your spot.</p>
-            </div>
-          </div>
-          <div style="background:#f9fafb;border-radius:.5rem;padding:1.25rem;">
+          <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Review Your Order</h2>
+          <div style="background:#f9fafb;border-radius:.5rem;padding:1.25rem;margin-bottom:1.5rem;">
             <h3 style="font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin:0 0 1rem;">Order Summary</h3>
             <div style="display:flex;justify-content:space-between;margin-bottom:.625rem;font-size:.9375rem;">
               <span id="ms-checkout-race-name" style="color:#374151;font-weight:500;"></span>
@@ -114,16 +101,18 @@
               <span id="ms-checkout-total" style="color:#00A99D;font-size:1.125rem;"></span>
             </div>
           </div>
-        </div>
-        <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
-          <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.25rem;">Complete Payment</h2>
-          <iframe id="ms-payment-frame" src="" width="100%" height="640" frameborder="0"
-            style="border:none;border-radius:.5rem;display:block;"></iframe>
-          <p id="ms-payment-fallback" style="display:none;text-align:center;margin-top:1rem;">
-            <a id="ms-payment-link" href="#" target="_blank"
-              style="display:inline-block;background:#00A99D;color:#fff;font-weight:700;padding:.75rem 2rem;border-radius:.5rem;text-decoration:none;font-size:1rem;">
-              Pay Now →
-            </a>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button id="ms-edit-btn" type="button"
+              style="flex:1;padding:.75rem 1.25rem;background:#fff;color:#1A2B4A;font-weight:600;font-size:.9375rem;border:1px solid #d1d5db;border-radius:.5rem;cursor:pointer;">
+              ← Edit Registration
+            </button>
+            <button id="ms-pay-btn" type="button"
+              style="flex:2;padding:.75rem 1.5rem;background:#00A99D;color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:.5rem;cursor:pointer;">
+              Confirm &amp; Pay →
+            </button>
+          </div>
+          <p id="ms-pay-status" style="display:none;text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">
+            Submitting registration…
           </p>
         </div>
       </div>
@@ -140,6 +129,8 @@
 (function() {
   var SHIRT_COST = 16;
   var NO_SHIRT_VALUE = 'udTmHg-rGL_4JplhylJFB';
+  var HS_PORTAL = '244551932';
+  var HS_FORM   = '5757b823-4188-4d5d-8b0d-02e520107210';
 
   var races = {};
   {% for r in all_races %}
@@ -154,99 +145,113 @@
   var shirtSelected = false;
   var capturedShirtLabel = '';
   var pendingPaymentUrl = '';
-  var checkoutShown = false;
+
+  function g(id) { return document.getElementById(id); }
 
   function msRecalculate() {
-    if (!currentRaceId) return;
     var race = races[currentRaceId];
     if (!race) return;
-
-    var baseEl = document.getElementById('ms-summary-base');
-    var shirtRow = document.getElementById('ms-summary-shirt-row');
-    var totalEl = document.getElementById('ms-summary-total');
-    var summary = document.getElementById('ms-order-summary');
-
-    var total = race.price;
-    if (baseEl) baseEl.textContent = '$' + race.price.toFixed(2);
-
-    if (shirtSelected) {
-      total += SHIRT_COST;
-      if (shirtRow) shirtRow.style.display = 'flex';
-    } else {
-      if (shirtRow) shirtRow.style.display = 'none';
-    }
-
-    if (totalEl) totalEl.textContent = '$' + total.toFixed(2);
-    if (summary) summary.style.display = '';
-
+    var total = race.price + (shirtSelected ? SHIRT_COST : 0);
+    var baseEl  = g('ms-summary-base');
+    var shirtEl = g('ms-summary-shirt-row');
+    var totEl   = g('ms-summary-total');
+    var sumEl   = g('ms-order-summary');
+    if (baseEl)  baseEl.textContent  = '$' + race.price.toFixed(2);
+    if (totEl)   totEl.textContent   = '$' + total.toFixed(2);
+    if (shirtEl) shirtEl.style.display = shirtSelected ? 'flex' : 'none';
+    if (sumEl)   sumEl.style.display  = '';
     pendingPaymentUrl = (shirtSelected && race.paymentUrlShirt)
-      ? race.paymentUrlShirt
-      : (race.paymentUrl || '');
-  }
-
-  function msCaptureShirtFromForm() {
-    var container = document.getElementById('hs-registration-form');
-    if (!container) return;
-    var checked = container.querySelector('input[name="do_you_want_product"]:checked');
-    if (checked) {
-      shirtSelected = (checked.value !== NO_SHIRT_VALUE);
-      var lbl = container.querySelector('label[for="' + checked.id + '"]');
-      capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
-      msRecalculate();
-    }
+      ? race.paymentUrlShirt : (race.paymentUrl || '');
   }
 
   function msShowCheckout() {
-    if (checkoutShown) return;
-    checkoutShown = true;
-
-    var race = races[currentRaceId];
-    var sel = document.getElementById('race-select');
+    var race     = races[currentRaceId];
+    var sel      = g('race-select');
     var raceName = sel ? sel.options[sel.selectedIndex].text.split(' · ')[0] : 'Your Race';
-    var basePrice = race ? race.price : 0;
-    var total = basePrice + (shirtSelected ? SHIRT_COST : 0);
+    var base     = race ? race.price : 0;
+    var total    = base + (shirtSelected ? SHIRT_COST : 0);
 
-    var el = function(id) { return document.getElementById(id); };
+    g('ms-checkout-race-name').textContent  = raceName;
+    g('ms-checkout-base-price').textContent = '$' + base.toFixed(2);
+    g('ms-checkout-total').textContent      = '$' + total.toFixed(2);
 
-    el('ms-checkout-race-name').textContent = raceName;
-    el('ms-checkout-base-price').textContent = '$' + basePrice.toFixed(2);
-    el('ms-checkout-total').textContent = '$' + total.toFixed(2);
-
-    var shirtRow = el('ms-checkout-shirt-row');
+    var shirtRow = g('ms-checkout-shirt-row');
     if (shirtSelected) {
-      el('ms-checkout-shirt-label').textContent = capturedShirtLabel || 'Shirt / Tank';
+      g('ms-checkout-shirt-label').textContent = capturedShirtLabel || 'Shirt / Tank';
       shirtRow.style.display = 'flex';
     } else {
       shirtRow.style.display = 'none';
     }
 
-    el('ms-race-selector').style.display = 'none';
-    el('ms-form-section').style.display = 'none';
-    el('ms-payment-note').style.display = 'none';
-    el('ms-checkout').style.display = 'block';
-
-    if (pendingPaymentUrl) {
-      var sep = pendingPaymentUrl.indexOf('?') !== -1 ? '&' : '?';
-      el('ms-payment-frame').src = pendingPaymentUrl + sep + 'embed=true';
-    } else {
-      el('ms-payment-frame').style.display = 'none';
-      el('ms-payment-fallback').style.display = 'block';
-      el('ms-payment-link').href = '/registration-confirmation';
-    }
-
-    el('ms-checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    g('ms-race-selector').style.display = 'none';
+    g('ms-form-section').style.display  = 'none';
+    g('ms-checkout').style.display      = 'block';
+    g('ms-checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  function msHideCheckout() {
+    g('ms-checkout').style.display      = 'none';
+    g('ms-race-selector').style.display = '';
+    g('ms-form-section').style.display  = '';
+  }
+
+  // Edit button — go back to form
+  document.addEventListener('DOMContentLoaded', function() {
+    var editBtn = g('ms-edit-btn');
+    if (editBtn) editBtn.addEventListener('click', msHideCheckout);
+
+    var payBtn = g('ms-pay-btn');
+    if (payBtn) payBtn.addEventListener('click', function() {
+      var statusEl = g('ms-pay-status');
+      if (statusEl) statusEl.style.display = 'block';
+      payBtn.disabled = true;
+
+      // Collect all visible form fields
+      var container = g('hs-registration-form');
+      var fields = [];
+      if (container) {
+        var inputs = container.querySelectorAll('input:not([type="submit"]), select, textarea');
+        for (var i = 0; i < inputs.length; i++) {
+          var inp = inputs[i];
+          if (!inp.name || !inp.value) continue;
+          if ((inp.type === 'radio' || inp.type === 'checkbox') && !inp.checked) continue;
+          fields.push({ name: inp.name, value: inp.value });
+        }
+      }
+
+      var payUrl = pendingPaymentUrl || '/registration-confirmation';
+
+      function doRedirect() { window.location.href = payUrl; }
+
+      if (fields.length > 0 && window.fetch) {
+        fetch('https://api.hsforms.com/submissions/v3/integration/submit/' + HS_PORTAL + '/' + HS_FORM, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: fields,
+            context: { pageUri: window.location.href, pageName: document.title }
+          })
+        }).then(doRedirect).catch(doRedirect);
+      } else {
+        doRedirect();
+      }
+    });
+
+    // Pre-select race from URL param
+    var sel = g('race-select');
+    if (sel && sel.value) msUpdateRace(sel.value);
+  });
 
   hbspt.forms.create({
     region: "na2",
-    portalId: "244551932",
-    formId: "5757b823-4188-4d5d-8b0d-02e520107210",
+    portalId: HS_PORTAL,
+    formId: HS_FORM,
     target: "#hs-registration-form",
     onFormReady: function() {
-      var container = document.getElementById('hs-registration-form');
+      var container = g('hs-registration-form');
       if (!container) return;
 
-      // Listen for shirt radio changes
+      // Shirt radio changes
       container.addEventListener('change', function(e) {
         if (e.target.name === 'do_you_want_product') {
           shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
@@ -256,52 +261,38 @@
         }
       });
 
-      // Click on submit button → capture data, then poll until HubSpot shows success
-      container.addEventListener('click', function(e) {
-        var btn = e.target.closest
-          ? e.target.closest('input[type="submit"],button[type="submit"]')
-          : (e.target.type === 'submit' ? e.target : null);
-        if (!btn) return;
-        msCaptureShirtFromForm();
-        var attempts = 0;
-        var poll = setInterval(function() {
-          attempts++;
-          var done = container.querySelector('.submitted-message') ||
-                     container.querySelector('[class*="submitted"]') ||
-                     !container.querySelector('form');
-          if (done) { clearInterval(poll); msShowCheckout(); }
-          else if (attempts > 30) { clearInterval(poll); }
-        }, 333);
-      });
+      // Hide HubSpot's submit button; inject our "Review My Order" button
+      function injectBtn() {
+        var hsSubmit = container.querySelector('input[type="submit"]');
+        if (!hsSubmit) { setTimeout(injectBtn, 200); return; }
+        if (g('ms-review-btn')) return;
+        hsSubmit.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;';
 
-      // MutationObserver with subtree catches nested DOM replacements
-      if (window.MutationObserver) {
-        var observer = new MutationObserver(function() {
-          var done = container.querySelector('.submitted-message') ||
-                     container.querySelector('[class*="submitted"]') ||
-                     !container.querySelector('form');
-          if (done) {
-            observer.disconnect();
-            msCaptureShirtFromForm();
-            msShowCheckout();
+        var btn = document.createElement('button');
+        btn.id   = 'ms-review-btn';
+        btn.type = 'button';
+        btn.textContent = 'Review My Order →';
+        btn.style.cssText = 'display:block;width:100%;padding:.75rem 1.5rem;background:#00A99D;color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:.5rem;cursor:pointer;margin-top:1rem;';
+        btn.addEventListener('click', function() {
+          // Read current shirt state
+          var checked = container.querySelector('input[name="do_you_want_product"]:checked');
+          if (checked) {
+            shirtSelected = (checked.value !== NO_SHIRT_VALUE);
+            var lbl = container.querySelector('label[for="' + checked.id + '"]');
+            capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
+            msRecalculate();
           }
+          msShowCheckout();
         });
-        observer.observe(container, { childList: true, subtree: true });
+        hsSubmit.parentNode.appendChild(btn);
       }
-    },
-    onFormSubmit: function() {
-      msCaptureShirtFromForm();
-      setTimeout(function() { msShowCheckout(); }, 600);
-    },
-    onFormSubmitted: function() {
-      msCaptureShirtFromForm();
-      msShowCheckout();
+      injectBtn();
     }
   });
 
   window.msUpdateRace = function(raceId) {
     currentRaceId = raceId;
-    var summary = document.getElementById('ms-order-summary');
+    var summary = g('ms-order-summary');
     if (!raceId || !races[raceId]) {
       if (summary) summary.style.display = 'none';
       pendingPaymentUrl = '';
@@ -309,11 +300,6 @@
     }
     msRecalculate();
   };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var sel = document.getElementById('race-select');
-    if (sel && sel.value) msUpdateRace(sel.value);
-  });
 })();
 </script>
 
