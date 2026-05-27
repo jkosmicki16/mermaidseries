@@ -11,6 +11,44 @@
   {{ require_css(get_asset_url("mermaid-race-portal/css/variables.css")) }}
   {{ require_css(get_asset_url("mermaid-race-portal/css/main.css")) }}
   {{ standard_header_includes }}
+  <style>
+    .reg-step { display:none; }
+    .reg-step.active { display:block; }
+    .step-bar { display:flex; gap:0; margin-bottom:2rem; }
+    .step-bar-item { flex:1; padding:.625rem .5rem; font-size:.8125rem; font-weight:600; text-align:center; background:#e5e7eb; color:#6b7280; border-right:2px solid #fff; }
+    .step-bar-item:last-child { border-right:none; }
+    .step-bar-item.active { background:#1A2B4A; color:#fff; }
+    .step-bar-item.done { background:#00A99D; color:#fff; }
+    .reg-field { margin-bottom:1.25rem; }
+    .reg-field label { display:block; font-weight:600; font-size:.875rem; color:#374151; margin-bottom:.375rem; }
+    .reg-field input, .reg-field select { width:100%; padding:.625rem .875rem; border:1px solid #d1d5db; border-radius:.5rem; font-size:1rem; color:#111827; background:#fff; box-sizing:border-box; }
+    .reg-field input:focus, .reg-field select:focus { outline:none; border-color:#00A99D; box-shadow:0 0 0 3px rgba(0,169,157,.15); }
+    .reg-field-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .shirt-option { display:flex; align-items:center; gap:.75rem; padding:.875rem 1rem; border:2px solid #e5e7eb; border-radius:.5rem; cursor:pointer; margin-bottom:.625rem; transition:border-color .15s; }
+    .shirt-option:hover { border-color:#00A99D; }
+    .shirt-option input[type=radio] { width:1.125rem; height:1.125rem; accent-color:#00A99D; flex-shrink:0; }
+    .shirt-option.selected { border-color:#00A99D; background:#f0fdfb; }
+    .shirt-option-label { font-weight:600; color:#1A2B4A; font-size:.9375rem; }
+    .shirt-option-sub { font-size:.8125rem; color:#6b7280; }
+    .price-badge { margin-left:auto; font-weight:700; color:#00A99D; font-size:.9375rem; }
+    .btn-primary { display:block; width:100%; padding:.8125rem 1.5rem; background:#00A99D; color:#fff; font-weight:700; font-size:1rem; border:none; border-radius:.5rem; cursor:pointer; text-align:center; }
+    .btn-secondary { display:block; width:100%; padding:.8125rem 1.5rem; background:#fff; color:#1A2B4A; font-weight:600; font-size:1rem; border:1px solid #d1d5db; border-radius:.5rem; cursor:pointer; text-align:center; }
+    .btn-row { display:flex; gap:.75rem; margin-top:1.5rem; }
+    .btn-row .btn-secondary { flex:1; }
+    .btn-row .btn-primary { flex:2; }
+    .review-row { display:flex; justify-content:space-between; padding:.625rem 0; border-bottom:1px solid #f3f4f6; font-size:.9375rem; }
+    .review-row:last-child { border-bottom:none; }
+    .review-label { color:#6b7280; }
+    .review-value { font-weight:600; color:#1A2B4A; text-align:right; max-width:60%; }
+    .review-total { display:flex; justify-content:space-between; padding:.875rem 0 0; margin-top:.5rem; border-top:2px solid #e5e7eb; font-weight:700; font-size:1.0625rem; }
+    .review-total-amount { color:#00A99D; font-size:1.25rem; }
+    .card { background:#fff; border-radius:.75rem; border:1px solid #e5e7eb; padding:2rem; margin-bottom:1.5rem; }
+    .section-title { font-size:1.125rem; font-weight:700; color:#1A2B4A; margin:0 0 1.5rem; }
+    .error-msg { color:#ef4444; font-size:.8125rem; margin-top:.25rem; display:none; }
+    .field-error input, .field-error select { border-color:#ef4444; }
+    .field-error .error-msg { display:block; }
+    @media(max-width:600px) { .reg-field-row { grid-template-columns:1fr; } .btn-row { flex-direction:column-reverse; } .btn-row .btn-primary, .btn-row .btn-secondary { flex:none; } }
+  </style>
 </head>
 <body>
 {% include "mermaid-race-portal/templates/partials/header.html" %}
@@ -33,87 +71,172 @@
         <span style="color:white;">Register</span>
       </nav>
       <h1 style="color:white;margin-bottom:.5rem;">Race Registration</h1>
-      <p style="color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;">Complete your registration below. Spots fill up fast!</p>
+      <p style="color:rgba(255,255,255,.8);font-size:1.125rem;margin:0;">Secure your spot in minutes. Spots fill up fast!</p>
     </div>
   </div>
 
   <div style="padding:2.5rem 2rem;background:#f9fafb;">
     <div style="max-width:820px;margin:0 auto;">
 
-      <!-- Race & price selector -->
-      <div id="ms-race-selector" style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
-        <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Select Your Race</h2>
-        <div style="margin-bottom:1.25rem;">
-          <label style="display:block;font-weight:600;font-size:.875rem;color:#374151;margin-bottom:.5rem;" for="race-select">Race <span style="color:#ef4444;">*</span></label>
-          <select id="race-select" name="race_id" required onchange="msUpdateRace(this.value)"
-            style="width:100%;padding:.625rem .875rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:1rem;color:#111827;background:#fff;">
-            <option value="">Select a race…</option>
-            {% for r in all_races %}
+      <!-- Step bar -->
+      <div class="step-bar" style="border-radius:.5rem;overflow:hidden;margin-bottom:1.5rem;">
+        <div class="step-bar-item active" id="bar-1">1 · Race</div>
+        <div class="step-bar-item" id="bar-2">2 · Details</div>
+        <div class="step-bar-item" id="bar-3">3 · Review &amp; Pay</div>
+      </div>
+
+      <!-- STEP 1: Race + Shirt -->
+      <div id="step-1" class="reg-step active">
+        <div class="card">
+          <h2 class="section-title">Choose Your Race</h2>
+          <div class="reg-field" id="field-race">
+            <label for="race-select">Race <span style="color:#ef4444;">*</span></label>
+            <select id="race-select">
+              <option value="">Select a race…</option>
+              {% for r in all_races %}
               <option value="{{ r.hs_id }}"
-                data-price="{{ r.price }}"
+                data-name="{{ r.name }}"
+                data-location="{{ r.location }}"
+                data-date="{{ r.date }}"
+                data-price="{{ r.price | default('0') }}"
                 data-payment-url="{{ r.payment_link_url | default('') }}"
+                data-payment-url-shirt="{{ r.payment_link_url_shirt | default('') }}"
                 {% if preselected_race and preselected_race.hs_id == r.hs_id %}selected{% endif %}>
                 {{ r.name }} — {{ r.location }}{% if r.price %} · ${{ r.price }}{% endif %}
               </option>
-            {% endfor %}
-          </select>
-        </div>
+              {% endfor %}
+            </select>
+            <div class="error-msg">Please select a race.</div>
+          </div>
 
-        <!-- Order summary — updates on race selection -->
-        <div id="ms-order-summary" style="display:none;background:#f9fafb;border-radius:.5rem;padding:1.25rem;margin-top:1rem;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.9375rem;">
-            <span style="color:#6b7280;">Registration Fee</span>
-            <span id="ms-summary-base" style="font-weight:600;color:#1A2B4A;"></span>
+          <!-- Race detail card (shown on selection) -->
+          <div id="race-detail" style="display:none;background:#f9fafb;border-radius:.5rem;padding:1rem;margin-bottom:1.5rem;font-size:.9rem;">
+            <div style="font-weight:700;color:#1A2B4A;margin-bottom:.25rem;" id="race-detail-name"></div>
+            <div style="color:#6b7280;" id="race-detail-meta"></div>
           </div>
-          <div id="ms-summary-shirt-row" style="display:none;justify-content:space-between;margin-bottom:.5rem;font-size:.9375rem;">
-            <span style="color:#6b7280;">Shirt / Tank</span>
-            <span style="font-weight:600;color:#1A2B4A;">+$16.00</span>
+
+          <h2 class="section-title" style="margin-top:1.5rem;">Would you like to add a Shirt or Tank?</h2>
+          <p style="font-size:.875rem;color:#6b7280;margin:-1rem 0 1rem;">Pick one — shirt/tank options add $16.00 to your total.</p>
+
+          <div id="shirt-options">
+            <label class="shirt-option" id="opt-shirt">
+              <input type="radio" name="shirt" value="shirt">
+              <div><div class="shirt-option-label">Shirt</div><div class="shirt-option-sub">Classic race tee</div></div>
+              <div class="price-badge">+$16</div>
+            </label>
+            <label class="shirt-option" id="opt-tank">
+              <input type="radio" name="shirt" value="tank">
+              <div><div class="shirt-option-label">Tank</div><div class="shirt-option-sub">Lightweight tank top</div></div>
+              <div class="price-badge">+$16</div>
+            </label>
+            <label class="shirt-option" id="opt-merman">
+              <input type="radio" name="shirt" value="merman">
+              <div><div class="shirt-option-label">Merman Unisex</div><div class="shirt-option-sub">Unisex cut</div></div>
+              <div class="price-badge">+$16</div>
+            </label>
+            <label class="shirt-option" id="opt-none">
+              <input type="radio" name="shirt" value="" checked>
+              <div><div class="shirt-option-label">No Shirt</div><div class="shirt-option-sub">Skip the shirt add-on</div></div>
+              <div class="price-badge" style="color:#9ca3af;">$0</div>
+            </label>
           </div>
-          <div style="border-top:1px solid #e5e7eb;padding-top:.75rem;display:flex;justify-content:space-between;font-weight:700;">
-            <span>Total</span>
-            <span id="ms-summary-total" style="color:#00A99D;font-size:1.125rem;"></span>
+
+          <!-- Live price box -->
+          <div id="price-box" style="display:none;background:#1A2B4A;border-radius:.5rem;padding:1.25rem;margin-top:1.5rem;color:white;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.9rem;">
+              <span style="color:rgba(255,255,255,.7);">Registration Fee</span>
+              <span id="pb-base" style="font-weight:600;"></span>
+            </div>
+            <div id="pb-shirt-row" style="display:none;justify-content:space-between;margin-bottom:.5rem;font-size:.9rem;">
+              <span id="pb-shirt-label" style="color:rgba(255,255,255,.7);"></span>
+              <span style="font-weight:600;">+$16.00</span>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,.2);padding-top:.75rem;display:flex;justify-content:space-between;font-weight:700;font-size:1.0625rem;">
+              <span>Total</span>
+              <span id="pb-total" style="color:#00A99D;font-size:1.25rem;"></span>
+            </div>
           </div>
+        </div>
+        <button class="btn-primary" onclick="goStep(2)">Continue to Your Details →</button>
+      </div>
+
+      <!-- STEP 2: Personal Details -->
+      <div id="step-2" class="reg-step">
+        <div class="card">
+          <h2 class="section-title">Your Information</h2>
+          <div class="reg-field-row">
+            <div class="reg-field" id="field-firstname">
+              <label for="inp-firstname">First Name <span style="color:#ef4444;">*</span></label>
+              <input id="inp-firstname" type="text" placeholder="Jane">
+              <div class="error-msg">First name is required.</div>
+            </div>
+            <div class="reg-field" id="field-lastname">
+              <label for="inp-lastname">Last Name <span style="color:#ef4444;">*</span></label>
+              <input id="inp-lastname" type="text" placeholder="Smith">
+              <div class="error-msg">Last name is required.</div>
+            </div>
+          </div>
+          <div class="reg-field" id="field-email">
+            <label for="inp-email">Email Address <span style="color:#ef4444;">*</span></label>
+            <input id="inp-email" type="email" placeholder="jane@example.com">
+            <div class="error-msg">A valid email address is required.</div>
+          </div>
+          <div class="reg-field">
+            <label for="inp-phone">Phone Number</label>
+            <input id="inp-phone" type="tel" placeholder="(555) 555-5555">
+          </div>
+          <div style="border-top:1px solid #f3f4f6;margin:1.5rem 0 1.25rem;"></div>
+          <h3 style="font-size:.9375rem;font-weight:700;color:#1A2B4A;margin:0 0 1rem;">Emergency Contact</h3>
+          <div class="reg-field-row">
+            <div class="reg-field">
+              <label for="inp-ec-name">Emergency Contact Name</label>
+              <input id="inp-ec-name" type="text" placeholder="Contact Name">
+            </div>
+            <div class="reg-field">
+              <label for="inp-ec-phone">Emergency Contact Phone</label>
+              <input id="inp-ec-phone" type="tel" placeholder="(555) 555-5555">
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goStep(1)">← Back</button>
+          <button class="btn-primary" onclick="goStep(3)">Review My Order →</button>
         </div>
       </div>
 
-      <!-- HubSpot registration form -->
-      <div id="ms-form-section" style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
-        <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Registration Details</h2>
-        <div id="hs-registration-form"></div>
-      </div>
-
-      <!-- Order review (shown when user clicks "Review My Order") -->
-      <div id="ms-checkout" style="display:none;">
-        <div style="background:#fff;border-radius:.75rem;border:1px solid #e5e7eb;padding:2rem;margin-bottom:1.5rem;">
-          <h2 style="font-size:1.125rem;font-weight:700;color:#1A2B4A;margin-bottom:1.5rem;">Review Your Order</h2>
-          <div style="background:#f9fafb;border-radius:.5rem;padding:1.25rem;margin-bottom:1.5rem;">
-            <h3 style="font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin:0 0 1rem;">Order Summary</h3>
-            <div style="display:flex;justify-content:space-between;margin-bottom:.625rem;font-size:.9375rem;">
-              <span id="ms-checkout-race-name" style="color:#374151;font-weight:500;"></span>
-              <span id="ms-checkout-base-price" style="font-weight:600;color:#1A2B4A;"></span>
-            </div>
-            <div id="ms-checkout-shirt-row" style="display:none;justify-content:space-between;margin-bottom:.625rem;font-size:.9375rem;">
-              <span id="ms-checkout-shirt-label" style="color:#374151;font-weight:500;"></span>
-              <span style="font-weight:600;color:#1A2B4A;">+$16.00</span>
-            </div>
-            <div style="border-top:1px solid #e5e7eb;padding-top:.875rem;margin-top:.25rem;display:flex;justify-content:space-between;font-weight:700;font-size:1rem;">
-              <span style="color:#111827;">Total</span>
-              <span id="ms-checkout-total" style="color:#00A99D;font-size:1.125rem;"></span>
+      <!-- STEP 3: Review & Pay -->
+      <div id="step-3" class="reg-step">
+        <div class="card">
+          <h2 class="section-title">Review Your Order</h2>
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;margin-bottom:.75rem;">Race Details</div>
+            <div class="review-row"><span class="review-label">Race</span><span class="review-value" id="rv-race"></span></div>
+            <div class="review-row"><span class="review-label">Location</span><span class="review-value" id="rv-location"></span></div>
+            <div class="review-row"><span class="review-label">Date</span><span class="review-value" id="rv-date"></span></div>
+          </div>
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;margin-bottom:.75rem;">Your Information</div>
+            <div class="review-row"><span class="review-label">Name</span><span class="review-value" id="rv-name"></span></div>
+            <div class="review-row"><span class="review-label">Email</span><span class="review-value" id="rv-email"></span></div>
+            <div class="review-row" id="rv-phone-row"><span class="review-label">Phone</span><span class="review-value" id="rv-phone"></span></div>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;margin-bottom:.75rem;">Order</div>
+            <div class="review-row"><span class="review-label">Registration</span><span class="review-value" id="rv-base-price"></span></div>
+            <div class="review-row" id="rv-shirt-row"><span class="review-label" id="rv-shirt-label"></span><span class="review-value">+$16.00</span></div>
+            <div class="review-total">
+              <span>Total Due</span>
+              <span class="review-total-amount" id="rv-total"></span>
             </div>
           </div>
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <button id="ms-edit-btn" type="button"
-              style="flex:1;padding:.75rem 1.25rem;background:#fff;color:#1A2B4A;font-weight:600;font-size:.9375rem;border:1px solid #d1d5db;border-radius:.5rem;cursor:pointer;">
-              ← Edit Registration
-            </button>
-            <button id="ms-pay-btn" type="button"
-              style="flex:2;padding:.75rem 1.5rem;background:#00A99D;color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:.5rem;cursor:pointer;">
-              Confirm &amp; Pay →
-            </button>
-          </div>
-          <p id="ms-pay-status" style="display:none;text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">
-            Submitting registration…
-          </p>
+          <p style="font-size:.8125rem;color:#9ca3af;margin:.5rem 0 0;">🔒 Secure payment powered by HubSpot Payments</p>
+        </div>
+        <div id="submit-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:.5rem;padding:1rem;margin-bottom:1rem;color:#ef4444;font-size:.875rem;">
+          Something went wrong submitting your registration. Please try again.
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goStep(2)">← Edit</button>
+          <button class="btn-primary" id="pay-btn" onclick="submitRegistration()">Confirm &amp; Pay →</button>
         </div>
       </div>
 
@@ -124,152 +247,193 @@
 {% end_dnd_area %}
 </main>
 
-<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
 <script>
 (function() {
   var SHIRT_COST = 16;
-  var NO_SHIRT_VALUE = 'udTmHg-rGL_4JplhylJFB';
-  var HS_PORTAL = '244551932';
-  var HS_FORM   = '5757b823-4188-4d5d-8b0d-02e520107210';
 
+  // Build race data from HubDB
   var races = {};
   {% for r in all_races %}
   races["{{ r.hs_id }}"] = {
-    price: parseFloat("{{ r.price | default('0') }}") || 0,
-    paymentUrl: "{{ r.payment_link_url | default('') }}",
+    name:            "{{ r.name | replace('"', '\\"') }}",
+    location:        "{{ r.location | replace('"', '\\"') }}",
+    date:            "{{ r.date }}",
+    price:           parseFloat("{{ r.price | default('0') }}") || 0,
+    paymentUrl:      "{{ r.payment_link_url | default('') }}",
     paymentUrlShirt: "{{ r.payment_link_url_shirt | default('') }}"
   };
   {% endfor %}
 
   var currentRaceId = '';
-  var shirtSelected = false;
-  var capturedShirtLabel = '';
-  var pendingPaymentUrl = '';
-  var capturedFields = [];
+  var shirtValue    = '';   // '', 'shirt', 'tank', 'merman'
+  var shirtLabel    = 'No Shirt';
 
+  // ── Helpers ──────────────────────────────────────────────────────────────
   function g(id) { return document.getElementById(id); }
+  function val(id) { return (g(id) || {}).value || ''; }
+  function setText(id, t) { var el = g(id); if (el) el.textContent = t; }
+  function show(id) { var el = g(id); if (el) el.style.display = ''; }
+  function hide(id) { var el = g(id); if (el) el.style.display = 'none'; }
 
-  function msRecalculate() {
+  // ── Price recalculation ───────────────────────────────────────────────────
+  function recalc() {
     var race = races[currentRaceId];
-    if (!race) return;
-    var total = race.price + (shirtSelected ? SHIRT_COST : 0);
-    var baseEl  = g('ms-summary-base');
-    var shirtEl = g('ms-summary-shirt-row');
-    var totEl   = g('ms-summary-total');
-    var sumEl   = g('ms-order-summary');
-    if (baseEl)  baseEl.textContent  = '$' + race.price.toFixed(2);
-    if (totEl)   totEl.textContent   = '$' + total.toFixed(2);
-    if (shirtEl) shirtEl.style.display = shirtSelected ? 'flex' : 'none';
-    if (sumEl)   sumEl.style.display  = '';
-    pendingPaymentUrl = (shirtSelected && race.paymentUrlShirt)
-      ? race.paymentUrlShirt : (race.paymentUrl || '');
-  }
-
-  function msShowCheckout() {
-    var race     = races[currentRaceId];
-    var sel      = g('race-select');
-    var raceName = sel ? sel.options[sel.selectedIndex].text.split(' · ')[0] : 'Your Race';
-    var base     = race ? race.price : 0;
-    var total    = base + (shirtSelected ? SHIRT_COST : 0);
-
-    var set = function(id, val) { var el = g(id); if (el) el.textContent = val; };
-    set('ms-checkout-race-name',  raceName);
-    set('ms-checkout-base-price', '$' + base.toFixed(2));
-    set('ms-checkout-total',      '$' + total.toFixed(2));
-
-    var shirtRow = g('ms-checkout-shirt-row');
-    if (shirtRow) {
-      if (shirtSelected) {
-        set('ms-checkout-shirt-label', capturedShirtLabel || 'Shirt / Tank');
-        shirtRow.style.display = 'flex';
-      } else {
-        shirtRow.style.display = 'none';
-      }
+    if (!race) { hide('price-box'); return; }
+    var hasShirt = !!shirtValue;
+    var total = race.price + (hasShirt ? SHIRT_COST : 0);
+    setText('pb-base', '$' + race.price.toFixed(2));
+    setText('pb-total', '$' + total.toFixed(2));
+    if (hasShirt) {
+      setText('pb-shirt-label', shirtLabel + ' add-on');
+      g('pb-shirt-row').style.display = 'flex';
+    } else {
+      hide('pb-shirt-row');
     }
-
-    var hide = function(id) { var el = g(id); if (el) el.style.display = 'none'; };
-    hide('ms-race-selector');
-    hide('ms-form-section');
-
-    var checkout = g('ms-checkout');
-    if (checkout) {
-      checkout.style.display = 'block';
-      checkout.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    show('price-box');
   }
 
-  function msHideCheckout() {
-    g('ms-checkout').style.display      = 'none';
-    g('ms-race-selector').style.display = '';
-    g('ms-form-section').style.display  = '';
-  }
+  // ── Race dropdown ─────────────────────────────────────────────────────────
+  g('race-select').addEventListener('change', function() {
+    currentRaceId = this.value;
+    var opt = this.options[this.selectedIndex];
+    if (!currentRaceId || !races[currentRaceId]) { hide('race-detail'); hide('price-box'); return; }
+    var r = races[currentRaceId];
+    setText('race-detail-name', r.name);
+    var dateStr = r.date ? new Date(r.date).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '';
+    setText('race-detail-meta', r.location + (dateStr ? ' · ' + dateStr : ''));
+    show('race-detail');
+    recalc();
+  });
 
-  // Edit button — go back to form
-  document.addEventListener('DOMContentLoaded', function() {
-    var editBtn = g('ms-edit-btn');
-    if (editBtn) editBtn.addEventListener('click', msHideCheckout);
-
-    var payBtn = g('ms-pay-btn');
-    if (payBtn) payBtn.addEventListener('click', function() {
-      var statusEl = g('ms-pay-status');
-      if (statusEl) statusEl.style.display = 'block';
-      payBtn.disabled = true;
-
-      // HubSpot already submitted the form via AJAX when onFormSubmit fired.
-      // Just redirect to the payment link.
-      window.location.href = pendingPaymentUrl || '/registration-confirmation';
+  // ── Shirt radios ──────────────────────────────────────────────────────────
+  document.querySelectorAll('input[name="shirt"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      shirtValue = this.value;
+      var labelMap = { shirt: 'Shirt', tank: 'Tank', merman: 'Merman Unisex', '': 'No Shirt' };
+      shirtLabel = labelMap[shirtValue] || 'No Shirt';
+      // Update selected styling
+      document.querySelectorAll('.shirt-option').forEach(function(el) { el.classList.remove('selected'); });
+      if (this.closest) this.closest('.shirt-option').classList.add('selected');
+      recalc();
     });
-
-    // Pre-select race from URL param
-    var sel = g('race-select');
-    if (sel && sel.value) msUpdateRace(sel.value);
   });
 
-  hbspt.forms.create({
-    region: "na2",
-    portalId: HS_PORTAL,
-    formId: HS_FORM,
-    target: "#hs-registration-form",
-    onFormReady: function($form) {
-      // $form is HubSpot's jQuery reference — it bridges the iframe boundary.
-      // Try to attach a change listener for the shirt radio via jQuery.
-      if ($form && $form.on) {
-        $form.on('change', 'input[name="do_you_want_product"]', function() {
-          shirtSelected = (this.value !== NO_SHIRT_VALUE);
-          var lbl = $form.find('label[for="' + this.id + '"]');
-          capturedShirtLabel = lbl.length ? lbl.text().trim() : '';
-          msRecalculate();
-        });
-      }
-    },
-    onFormSubmit: function($form) {
-      // Read shirt selection at submit time via HubSpot's $form bridge
-      if ($form && $form.find) {
-        var checked = $form.find('input[name="do_you_want_product"]:checked');
-        if (checked.length) {
-          shirtSelected = (checked.val() !== NO_SHIRT_VALUE);
-          var lbl = $form.find('label[for="' + checked.attr('id') + '"]');
-          capturedShirtLabel = lbl.length ? lbl.text().trim() : '';
-          msRecalculate();
-        }
-      }
-      // Show checkout — HubSpot's AJAX submission continues in background;
-      // the "Form submitted" message lands inside #ms-form-section which is
-      // now hidden, so the user only sees our checkout.
-      msShowCheckout();
-    }
-  });
+  // ── Step navigation ───────────────────────────────────────────────────────
+  window.goStep = function(n) {
+    // Validate before advancing
+    if (n === 2 && !validateStep1()) return;
+    if (n === 3 && !validateStep2()) return;
+    if (n === 3) populateReview();
 
-  window.msUpdateRace = function(raceId) {
-    currentRaceId = raceId;
-    var summary = g('ms-order-summary');
-    if (!raceId || !races[raceId]) {
-      if (summary) summary.style.display = 'none';
-      pendingPaymentUrl = '';
-      return;
-    }
-    msRecalculate();
+    [1,2,3].forEach(function(i) {
+      var step = g('step-' + i);
+      var bar  = g('bar-' + i);
+      if (step) step.classList.toggle('active', i === n);
+      if (bar) {
+        bar.classList.remove('active', 'done');
+        if (i === n)  bar.classList.add('active');
+        if (i < n)    bar.classList.add('done');
+      }
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // ── Validation ────────────────────────────────────────────────────────────
+  function validateStep1() {
+    var ok = true;
+    var raceField = g('field-race');
+    if (!currentRaceId) {
+      raceField.classList.add('field-error');
+      ok = false;
+    } else {
+      raceField.classList.remove('field-error');
+    }
+    return ok;
+  }
+
+  function validateStep2() {
+    var ok = true;
+    function check(fieldId, inputId, test) {
+      var el = g(fieldId);
+      var v = val(inputId).trim();
+      if (!test(v)) { el.classList.add('field-error'); ok = false; }
+      else           { el.classList.remove('field-error'); }
+    }
+    check('field-firstname', 'inp-firstname', function(v) { return v.length > 0; });
+    check('field-lastname',  'inp-lastname',  function(v) { return v.length > 0; });
+    check('field-email',     'inp-email',     function(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); });
+    return ok;
+  }
+
+  // ── Review population ─────────────────────────────────────────────────────
+  function populateReview() {
+    var race = races[currentRaceId] || {};
+    var hasShirt = !!shirtValue;
+    var total = (race.price || 0) + (hasShirt ? SHIRT_COST : 0);
+    var dateStr = race.date ? new Date(race.date).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '—';
+    var phone = val('inp-phone').trim();
+
+    setText('rv-race',       race.name     || '—');
+    setText('rv-location',   race.location || '—');
+    setText('rv-date',       dateStr);
+    setText('rv-name',       val('inp-firstname').trim() + ' ' + val('inp-lastname').trim());
+    setText('rv-email',      val('inp-email').trim());
+    setText('rv-base-price', '$' + (race.price || 0).toFixed(2));
+    setText('rv-total',      '$' + total.toFixed(2));
+
+    if (phone) { setText('rv-phone', phone); show('rv-phone-row'); }
+    else { hide('rv-phone-row'); }
+
+    if (hasShirt) {
+      setText('rv-shirt-label', shirtLabel);
+      g('rv-shirt-row').style.display = 'flex';
+    } else {
+      hide('rv-shirt-row');
+    }
+  }
+
+  // ── Submit to HubSpot + redirect ──────────────────────────────────────────
+  window.submitRegistration = function() {
+    var btn = g('pay-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    hide('submit-error');
+
+    var race = races[currentRaceId] || {};
+    var payUrl = (shirtValue && race.paymentUrlShirt)
+      ? race.paymentUrlShirt
+      : (race.paymentUrl || '/registration-confirmation');
+
+    var fields = [
+      { name: 'firstname', value: val('inp-firstname').trim() },
+      { name: 'lastname',  value: val('inp-lastname').trim() },
+      { name: 'email',     value: val('inp-email').trim() }
+    ];
+    var phone = val('inp-phone').trim();
+    if (phone) fields.push({ name: 'phone', value: phone });
+
+    fetch('https://api.hsforms.com/submissions/v3/integration/submit/244551932/5757b823-4188-4d5d-8b0d-02e520107210', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: fields, context: { pageUri: window.location.href, pageName: document.title } })
+    }).then(function() {
+      window.location.href = payUrl;
+    }).catch(function() {
+      // Still redirect even if HubSpot API fails — payment is the priority
+      window.location.href = payUrl;
+    });
+  };
+
+  // ── Pre-select race from URL param ────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    var sel = g('race-select');
+    if (sel && sel.value) {
+      currentRaceId = sel.value;
+      sel.dispatchEvent(new Event('change'));
+    }
+    // Mark "No Shirt" as selected by default
+    var noneOpt = g('opt-none');
+    if (noneOpt) noneOpt.classList.add('selected');
+  });
 })();
 </script>
 
