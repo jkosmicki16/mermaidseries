@@ -145,6 +145,7 @@
   var shirtSelected = false;
   var capturedShirtLabel = '';
   var pendingPaymentUrl = '';
+  var capturedFields = [];
 
   function g(id) { return document.getElementById(id); }
 
@@ -206,29 +207,16 @@
       if (statusEl) statusEl.style.display = 'block';
       payBtn.disabled = true;
 
-      // Collect all visible form fields
-      var container = g('hs-registration-form');
-      var fields = [];
-      if (container) {
-        var inputs = container.querySelectorAll('input:not([type="submit"]), select, textarea');
-        for (var i = 0; i < inputs.length; i++) {
-          var inp = inputs[i];
-          if (!inp.name || !inp.value) continue;
-          if ((inp.type === 'radio' || inp.type === 'checkbox') && !inp.checked) continue;
-          fields.push({ name: inp.name, value: inp.value });
-        }
-      }
-
       var payUrl = pendingPaymentUrl || '/registration-confirmation';
 
       function doRedirect() { window.location.href = payUrl; }
 
-      if (fields.length > 0 && window.fetch) {
+      if (capturedFields.length > 0 && window.fetch) {
         fetch('https://api.hsforms.com/submissions/v3/integration/submit/' + HS_PORTAL + '/' + HS_FORM, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            fields: fields,
+            fields: capturedFields,
             context: { pageUri: window.location.href, pageName: document.title }
           })
         }).then(doRedirect).catch(doRedirect);
@@ -261,48 +249,35 @@
         }
       });
 
-      // Inject "Review My Order" button, hiding HubSpot's Submit.
-      // Runs both immediately (single-step) and via MutationObserver (multi-step,
-      // where Submit only appears in the DOM when the user reaches the last page).
-      function injectReviewBtn() {
-        var hsSubmit = container.querySelector('input[type="submit"]');
-        if (!hsSubmit) return;
-        // Hide the native submit button
-        hsSubmit.style.position = 'absolute';
-        hsSubmit.style.left     = '-9999px';
-        hsSubmit.style.width    = '1px';
-        hsSubmit.style.height   = '1px';
-        // Don't add a second copy
-        if (g('ms-review-btn')) return;
+      // Intercept the form submit at the document level (capture phase) so it
+      // fires before HubSpot's own handler — works for both single and multi-step
+      // forms without needing to inject or replace any buttons.
+      document.addEventListener('submit', function(e) {
+        if (!container.contains(e.target)) return; // not our form
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-        var btn = document.createElement('button');
-        btn.id   = 'ms-review-btn';
-        btn.type = 'button';
-        btn.textContent = 'Review My Order →';
-        btn.style.cssText = 'display:block;width:100%;padding:.75rem 1.5rem;background:#00A99D;color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:.5rem;cursor:pointer;margin-top:1rem;';
-        btn.addEventListener('click', function() {
-          var checked = container.querySelector('input[name="do_you_want_product"]:checked');
-          if (checked) {
-            shirtSelected = (checked.value !== NO_SHIRT_VALUE);
-            var lbl = container.querySelector('label[for="' + checked.id + '"]');
-            capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
-            msRecalculate();
-          }
-          msShowCheckout();
-        });
-        hsSubmit.parentNode.appendChild(btn);
-      }
+        // Capture shirt selection from the live form DOM
+        var checked = container.querySelector('input[name="do_you_want_product"]:checked');
+        if (checked) {
+          shirtSelected = (checked.value !== NO_SHIRT_VALUE);
+          var lbl = container.querySelector('label[for="' + checked.id + '"]');
+          capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
+          msRecalculate();
+        }
 
-      // Try immediately (works if form is single-step)
-      injectReviewBtn();
+        // Collect all form field values for the API call on "Confirm & Pay"
+        capturedFields = [];
+        var inputs = e.target.querySelectorAll('input:not([type="submit"]), select, textarea');
+        for (var i = 0; i < inputs.length; i++) {
+          var inp = inputs[i];
+          if (!inp.name || inp.value === '') continue;
+          if ((inp.type === 'radio' || inp.type === 'checkbox') && !inp.checked) continue;
+          capturedFields.push({ name: inp.name, value: inp.value });
+        }
 
-      // Watch for DOM changes — fires when multi-step form renders the last page
-      if (window.MutationObserver) {
-        var btnObs = new MutationObserver(function() {
-          injectReviewBtn();
-        });
-        btnObs.observe(container, { childList: true, subtree: true });
-      }
+        msShowCheckout();
+      }, true); // true = capture phase, fires before HubSpot
     }
   });
 
