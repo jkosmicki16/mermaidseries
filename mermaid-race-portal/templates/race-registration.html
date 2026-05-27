@@ -261,12 +261,19 @@
         }
       });
 
-      // Hide HubSpot's submit button; inject our "Review My Order" button
-      function injectBtn() {
+      // Inject "Review My Order" button, hiding HubSpot's Submit.
+      // Runs both immediately (single-step) and via MutationObserver (multi-step,
+      // where Submit only appears in the DOM when the user reaches the last page).
+      function injectReviewBtn() {
         var hsSubmit = container.querySelector('input[type="submit"]');
-        if (!hsSubmit) { setTimeout(injectBtn, 200); return; }
+        if (!hsSubmit) return;
+        // Hide the native submit button
+        hsSubmit.style.position = 'absolute';
+        hsSubmit.style.left     = '-9999px';
+        hsSubmit.style.width    = '1px';
+        hsSubmit.style.height   = '1px';
+        // Don't add a second copy
         if (g('ms-review-btn')) return;
-        hsSubmit.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;';
 
         var btn = document.createElement('button');
         btn.id   = 'ms-review-btn';
@@ -274,7 +281,6 @@
         btn.textContent = 'Review My Order →';
         btn.style.cssText = 'display:block;width:100%;padding:.75rem 1.5rem;background:#00A99D;color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:.5rem;cursor:pointer;margin-top:1rem;';
         btn.addEventListener('click', function() {
-          // Read current shirt state
           var checked = container.querySelector('input[name="do_you_want_product"]:checked');
           if (checked) {
             shirtSelected = (checked.value !== NO_SHIRT_VALUE);
@@ -286,7 +292,17 @@
         });
         hsSubmit.parentNode.appendChild(btn);
       }
-      injectBtn();
+
+      // Try immediately (works if form is single-step)
+      injectReviewBtn();
+
+      // Watch for DOM changes — fires when multi-step form renders the last page
+      if (window.MutationObserver) {
+        var btnObs = new MutationObserver(function() {
+          injectReviewBtn();
+        });
+        btnObs.observe(container, { childList: true, subtree: true });
+      }
     }
   });
 
