@@ -172,22 +172,30 @@
     var base     = race ? race.price : 0;
     var total    = base + (shirtSelected ? SHIRT_COST : 0);
 
-    g('ms-checkout-race-name').textContent  = raceName;
-    g('ms-checkout-base-price').textContent = '$' + base.toFixed(2);
-    g('ms-checkout-total').textContent      = '$' + total.toFixed(2);
+    var set = function(id, val) { var el = g(id); if (el) el.textContent = val; };
+    set('ms-checkout-race-name',  raceName);
+    set('ms-checkout-base-price', '$' + base.toFixed(2));
+    set('ms-checkout-total',      '$' + total.toFixed(2));
 
     var shirtRow = g('ms-checkout-shirt-row');
-    if (shirtSelected) {
-      g('ms-checkout-shirt-label').textContent = capturedShirtLabel || 'Shirt / Tank';
-      shirtRow.style.display = 'flex';
-    } else {
-      shirtRow.style.display = 'none';
+    if (shirtRow) {
+      if (shirtSelected) {
+        set('ms-checkout-shirt-label', capturedShirtLabel || 'Shirt / Tank');
+        shirtRow.style.display = 'flex';
+      } else {
+        shirtRow.style.display = 'none';
+      }
     }
 
-    g('ms-race-selector').style.display = 'none';
-    g('ms-form-section').style.display  = 'none';
-    g('ms-checkout').style.display      = 'block';
-    g('ms-checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var hide = function(id) { var el = g(id); if (el) el.style.display = 'none'; };
+    hide('ms-race-selector');
+    hide('ms-form-section');
+
+    var checkout = g('ms-checkout');
+    if (checkout) {
+      checkout.style.display = 'block';
+      checkout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   function msHideCheckout() {
@@ -207,22 +215,9 @@
       if (statusEl) statusEl.style.display = 'block';
       payBtn.disabled = true;
 
-      var payUrl = pendingPaymentUrl || '/registration-confirmation';
-
-      function doRedirect() { window.location.href = payUrl; }
-
-      if (capturedFields.length > 0 && window.fetch) {
-        fetch('https://api.hsforms.com/submissions/v3/integration/submit/' + HS_PORTAL + '/' + HS_FORM, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fields: capturedFields,
-            context: { pageUri: window.location.href, pageName: document.title }
-          })
-        }).then(doRedirect).catch(doRedirect);
-      } else {
-        doRedirect();
-      }
+      // HubSpot already submitted the form via AJAX when onFormSubmit fired.
+      // Just redirect to the payment link.
+      window.location.href = pendingPaymentUrl || '/registration-confirmation';
     });
 
     // Pre-select race from URL param
@@ -235,60 +230,33 @@
     portalId: HS_PORTAL,
     formId: HS_FORM,
     target: "#hs-registration-form",
-    onFormReady: function() {
-      var container = g('hs-registration-form');
-      if (!container) return;
-
-      // Shirt radio changes
-      container.addEventListener('change', function(e) {
-        if (e.target.name === 'do_you_want_product') {
-          shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
-          var lbl = container.querySelector('label[for="' + e.target.id + '"]');
-          capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
+    onFormReady: function($form) {
+      // $form is HubSpot's jQuery reference — it bridges the iframe boundary.
+      // Try to attach a change listener for the shirt radio via jQuery.
+      if ($form && $form.on) {
+        $form.on('change', 'input[name="do_you_want_product"]', function() {
+          shirtSelected = (this.value !== NO_SHIRT_VALUE);
+          var lbl = $form.find('label[for="' + this.id + '"]');
+          capturedShirtLabel = lbl.length ? lbl.text().trim() : '';
+          msRecalculate();
+        });
+      }
+    },
+    onFormSubmit: function($form) {
+      // Read shirt selection at submit time via HubSpot's $form bridge
+      if ($form && $form.find) {
+        var checked = $form.find('input[name="do_you_want_product"]:checked');
+        if (checked.length) {
+          shirtSelected = (checked.val() !== NO_SHIRT_VALUE);
+          var lbl = $form.find('label[for="' + checked.attr('id') + '"]');
+          capturedShirtLabel = lbl.length ? lbl.text().trim() : '';
           msRecalculate();
         }
-      });
-
-      // HubSpot multi-step forms submit via internal XHR — the native HTML
-      // "submit" event never fires. Intercept the CLICK on the Submit button
-      // in capture phase at the document level, which fires before HubSpot's
-      // own click handler on child elements.
-      document.addEventListener('click', function(e) {
-        if (!container.contains(e.target)) return;
-
-        // Identify the final Submit button by its text/value.
-        // Multi-step forms also have Next/Previous buttons — we skip those.
-        var t = e.target;
-        var btnText = (t.value || t.textContent || '').trim().toLowerCase();
-        if (btnText !== 'submit') return;
-
-        e.preventDefault();
-        e.stopImmediatePropagation(); // prevents HubSpot's handler from firing
-
-        // Capture shirt selection from the live form DOM
-        var checked = container.querySelector('input[name="do_you_want_product"]:checked');
-        if (checked) {
-          shirtSelected = (checked.value !== NO_SHIRT_VALUE);
-          var lbl = container.querySelector('label[for="' + checked.id + '"]');
-          capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
-          msRecalculate();
-        }
-
-        // Collect all form field values for the API call on "Confirm & Pay"
-        capturedFields = [];
-        var form = container.querySelector('form');
-        if (form) {
-          var inputs = form.querySelectorAll('input:not([type="submit"]), select, textarea');
-          for (var i = 0; i < inputs.length; i++) {
-            var inp = inputs[i];
-            if (!inp.name || inp.value === '') continue;
-            if ((inp.type === 'radio' || inp.type === 'checkbox') && !inp.checked) continue;
-            capturedFields.push({ name: inp.name, value: inp.value });
-          }
-        }
-
-        msShowCheckout();
-      }, true); // true = capture phase, fires before any child-element handlers
+      }
+      // Show checkout — HubSpot's AJAX submission continues in background;
+      // the "Form submitted" message lands inside #ms-form-section which is
+      // now hidden, so the user only sees our checkout.
+      msShowCheckout();
     }
   });
 
