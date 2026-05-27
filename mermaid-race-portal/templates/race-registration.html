@@ -154,74 +154,87 @@
   var shirtSelected = false;
   var capturedShirtLabel = '';
   var pendingPaymentUrl = '';
+  var checkoutShown = false;
 
   function msRecalculate() {
     if (!currentRaceId) return;
     var race = races[currentRaceId];
     if (!race) return;
 
-    var summary = document.getElementById('ms-order-summary');
     var baseEl = document.getElementById('ms-summary-base');
     var shirtRow = document.getElementById('ms-summary-shirt-row');
     var totalEl = document.getElementById('ms-summary-total');
+    var summary = document.getElementById('ms-order-summary');
 
     var total = race.price;
-    baseEl.textContent = '$' + race.price.toFixed(2);
+    if (baseEl) baseEl.textContent = '$' + race.price.toFixed(2);
 
     if (shirtSelected) {
       total += SHIRT_COST;
-      shirtRow.style.display = 'flex';
+      if (shirtRow) shirtRow.style.display = 'flex';
     } else {
-      shirtRow.style.display = 'none';
+      if (shirtRow) shirtRow.style.display = 'none';
     }
 
-    totalEl.textContent = '$' + total.toFixed(2);
-    summary.style.display = '';
+    if (totalEl) totalEl.textContent = '$' + total.toFixed(2);
+    if (summary) summary.style.display = '';
 
-    if (shirtSelected && race.paymentUrlShirt) {
-      pendingPaymentUrl = race.paymentUrlShirt;
-    } else {
-      pendingPaymentUrl = race.paymentUrl || '';
+    pendingPaymentUrl = (shirtSelected && race.paymentUrlShirt)
+      ? race.paymentUrlShirt
+      : (race.paymentUrl || '');
+  }
+
+  function msCaptureShirtFromForm() {
+    var container = document.getElementById('hs-registration-form');
+    if (!container) return;
+    var checked = container.querySelector('input[name="do_you_want_product"]:checked');
+    if (checked) {
+      shirtSelected = (checked.value !== NO_SHIRT_VALUE);
+      var lbl = container.querySelector('label[for="' + checked.id + '"]');
+      capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
+      msRecalculate();
     }
   }
 
   function msShowCheckout() {
+    if (checkoutShown) return;
+    checkoutShown = true;
+
     var race = races[currentRaceId];
     var sel = document.getElementById('race-select');
-    var raceName = sel ? sel.options[sel.selectedIndex].text.split(' · ')[0] : '';
-    var total = race ? race.price + (shirtSelected ? SHIRT_COST : 0) : 0;
+    var raceName = sel ? sel.options[sel.selectedIndex].text.split(' · ')[0] : 'Your Race';
+    var basePrice = race ? race.price : 0;
+    var total = basePrice + (shirtSelected ? SHIRT_COST : 0);
 
-    document.getElementById('ms-checkout-race-name').textContent = raceName;
-    document.getElementById('ms-checkout-base-price').textContent = '$' + (race ? race.price.toFixed(2) : '0.00');
-    document.getElementById('ms-checkout-total').textContent = '$' + total.toFixed(2);
+    var el = function(id) { return document.getElementById(id); };
 
-    var shirtRow = document.getElementById('ms-checkout-shirt-row');
+    el('ms-checkout-race-name').textContent = raceName;
+    el('ms-checkout-base-price').textContent = '$' + basePrice.toFixed(2);
+    el('ms-checkout-total').textContent = '$' + total.toFixed(2);
+
+    var shirtRow = el('ms-checkout-shirt-row');
     if (shirtSelected) {
-      document.getElementById('ms-checkout-shirt-label').textContent = capturedShirtLabel || 'Shirt / Tank';
+      el('ms-checkout-shirt-label').textContent = capturedShirtLabel || 'Shirt / Tank';
       shirtRow.style.display = 'flex';
     } else {
       shirtRow.style.display = 'none';
     }
 
-    // Hide form, show checkout
-    document.getElementById('ms-race-selector').style.display = 'none';
-    document.getElementById('ms-form-section').style.display = 'none';
-    document.getElementById('ms-payment-note').style.display = 'none';
-    document.getElementById('ms-checkout').style.display = 'block';
+    el('ms-race-selector').style.display = 'none';
+    el('ms-form-section').style.display = 'none';
+    el('ms-payment-note').style.display = 'none';
+    el('ms-checkout').style.display = 'block';
 
-    // Embed payment iframe
     if (pendingPaymentUrl) {
       var sep = pendingPaymentUrl.indexOf('?') !== -1 ? '&' : '?';
-      document.getElementById('ms-payment-frame').src = pendingPaymentUrl + sep + 'embed=true';
+      el('ms-payment-frame').src = pendingPaymentUrl + sep + 'embed=true';
     } else {
-      // No payment URL — show fallback link
-      document.getElementById('ms-payment-frame').style.display = 'none';
-      var fallback = document.getElementById('ms-payment-fallback');
-      fallback.style.display = 'block';
-      document.getElementById('ms-payment-link').href = '/registration-confirmation';
+      el('ms-payment-frame').style.display = 'none';
+      el('ms-payment-fallback').style.display = 'block';
+      el('ms-payment-link').href = '/registration-confirmation';
     }
 
-    document.getElementById('ms-checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el('ms-checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   hbspt.forms.create({
@@ -231,18 +244,37 @@
     target: "#hs-registration-form",
     onFormReady: function() {
       var container = document.getElementById('hs-registration-form');
-      if (container) {
-        container.addEventListener('change', function(e) {
-          if (e.target.name === 'do_you_want_product') {
-            shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
-            var lbl = container.querySelector('label[for="' + e.target.id + '"]');
-            capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
-            msRecalculate();
+      if (!container) return;
+
+      // Listen for shirt radio changes
+      container.addEventListener('change', function(e) {
+        if (e.target.name === 'do_you_want_product') {
+          shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
+          var lbl = container.querySelector('label[for="' + e.target.id + '"]');
+          capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
+          msRecalculate();
+        }
+      });
+
+      // MutationObserver: fires when HubSpot replaces the <form> with its success message
+      if (window.MutationObserver) {
+        var observer = new MutationObserver(function() {
+          if (!container.querySelector('form')) {
+            observer.disconnect();
+            msCaptureShirtFromForm();
+            msShowCheckout();
           }
         });
+        observer.observe(container, { childList: true });
       }
     },
+    // Belt-and-suspenders: keep both callbacks as fallback
     onFormSubmit: function() {
+      msCaptureShirtFromForm();
+      setTimeout(function() { msShowCheckout(); }, 400);
+    },
+    onFormSubmitted: function() {
+      msCaptureShirtFromForm();
       msShowCheckout();
     }
   });
@@ -251,7 +283,7 @@
     currentRaceId = raceId;
     var summary = document.getElementById('ms-order-summary');
     if (!raceId || !races[raceId]) {
-      summary.style.display = 'none';
+      if (summary) summary.style.display = 'none';
       pendingPaymentUrl = '';
       return;
     }
