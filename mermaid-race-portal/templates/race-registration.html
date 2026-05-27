@@ -235,7 +235,6 @@
         container.addEventListener('change', function(e) {
           if (e.target.name === 'do_you_want_product') {
             shirtSelected = (e.target.value !== NO_SHIRT_VALUE);
-            // Capture the visible label text for the checkout summary
             var lbl = container.querySelector('label[for="' + e.target.id + '"]');
             capturedShirtLabel = lbl ? lbl.textContent.trim() : '';
             msRecalculate();
@@ -243,7 +242,7 @@
         });
       }
     },
-    onFormSubmitted: function() {
+    onFormSubmit: function() {
       msShowCheckout();
     }
   });
